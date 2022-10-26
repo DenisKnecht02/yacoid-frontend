@@ -13,8 +13,8 @@
           {#if action === "true"}
           <div class="badge badge-secondary text-base mb-2 p-3">{category}</div>
           <div id="forSymbol" class="flex flex-wrap gap-3 items-center">
-            <button title="accept" class="px-2 text-lg bg-green-400 rounded-lg pb-1">👍</button>
-            <button title="don't accept" class="px-2 bg-red-400 rounded-lg py-0.5 text-lg">👎</button>
+            <label for="modal_accept" class="cursor-pointer px-2 text-lg bg-green-400 rounded-lg pb-1">👍</label>
+            <label for="modal_decline" class="cursor-pointer px-2 text-lg bg-red-400 rounded-lg pb-1">👎</label>
           </div>
             
           {:else}
@@ -29,6 +29,33 @@
         
     </div>
 </div>
+
+<input type="checkbox" id="modal_accept" class="modal-toggle" />
+<label for="modal_accept" class="modal cursor-pointer">
+  <label class="modal-box relative" for="">
+    <h3 class="text-lg font-bold">Definition accepted</h3>
+  </label>
+</label>
+
+<input type="checkbox" id="modal_decline" class="modal-toggle" />
+<label for="modal_decline" class="modal cursor-pointer">
+  <label class="modal-box relative" for="">
+    <div class="flex flex-col justify-center items-center">
+      <h3 class="text-lg font-bold">Definition declined</h3>
+      <div class="form-control w-full max-w-xs items-center">
+        <label class="label">
+          <span class="label-text">Please provide feedback</span>
+        </label>
+        <textarea class="textarea textarea-secondary h-48 w-full" placeholder="Type here..."></textarea>
+        <label class="label">
+        </label>
+      </div>
+    </div>
+    <div class="modal-action">
+      <label for="modal_decline" class="btn btn-secondary btn-sm">Send</label>
+    </div>
+  </label>
+</label>
 
 <style lang="postcss">
     

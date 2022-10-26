@@ -19,6 +19,7 @@
     Hic nemo eligendi eum quam quae aut molestiae blanditiis et commodi unde?"
     author="Winston, P.H."
     publishing_date="1992"
+    source="undefined"
     action="true"
     />
 
@@ -27,6 +28,7 @@
       quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
       author="Winston, P.H."
       publishing_date="1992"
+      source="undefined"
       action="true"
     />
 
@@ -38,6 +40,7 @@
       Hic nemo eligendi eum quam quae aut molestiae blanditiis et commodi unde?"
       author="Winston, P.H."
       publishing_date="1992"
+      source="undefined"
       action="true"
     />
 
@@ -46,6 +49,7 @@
       quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
       author="Winston, P.H."
       publishing_date="1992"
+      source="undefined"
       action="true"
     />
   </div>
