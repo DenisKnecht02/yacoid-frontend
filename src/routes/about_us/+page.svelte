@@ -184,14 +184,16 @@
 				</div>
 
 				<p class="text-xl text-justify m-8">
-					Wir sind ein Team aus vier Studenten. Zum Zeitpunkt der Fertigstellung dieser Webseite <span
-						class="text-xl font-mono">(Februar 2023)</span
-					>
-					absolvieren wir das vierte Semester im Bereich Informatik in Form eines dualen Studiums an
-					der
-					<bold class="font-bold">HWR</bold>
-					<span class="text-xl font-mono">(Hochschule für Wirtschaft und Recht)</span>. Weitere
-					Informationen zur HWR befinden sich weiter unten auf dieser Seite.
+					We are a team of four students. At the time of completion of this website
+					<span
+						class="text-xl font-mono">(February 2023)</span>
+					we are completing the fifth semester in the field of computer science in the form of a dual study program at the
+					<bold class="font-bold">Berlin School of Economics and Law</bold>.
+					Further information on the university can be found 
+					<a
+						class="link link-secondary" href="https://www.hwr-berlin.de/">here
+					</a>
+					.
 				</p>
 			</section>
 		</div>
@@ -205,19 +207,12 @@
 				class="p-8 max-w-4xl xl:max-w-6xl 2xl:max-w-7xl text-center bg-base-100 shadow-2xl rounded-xl"
 			>
 				<p class="text-xl text-justify m-8">
-					Zu dem dualen Studiengang Informatik an der HWR Berlin gehört im vierten Semester die
-					Bearbeitung eines Studienprojektes von einem mehrköpfigen Team von Studenten. Die Arbeit
-					an der Webseite sowie die Implementierung und Erweiterung des Vikus-Viewers finden im
-					Rahmen dieses Projektes statt. An unserem Thema zur Entwicklung des Begriffs der
-					Künstlichen Intelligenz, bzw. EvoInt, wurde schon in den Vorjahren gearbeitet. Dabei haben
-					vorangegangene Studenten Daten von der IJCAI analysiert und ausgewertet sowie in den
-					Vikus-Viewer integriert, jedoch konnte man diese Ergebnisse bisher nicht einsehen. Mit
-					unserer von der HWR gehosteten Webseite ändert sich das, denn nun ist es möglich, die
-					Ergebnisse öffentlich aufzurufen und interaktiv zu nutzen sowie sich einen Überblick zum
-					Thema mithilfe der informativen Seiten zu verschaffen. Das Thema der dazugehörigen
-					Studienarbeit lautet "Weiterentwicklung eines Trackers zur interaktiven Visualisierung der
-					historischen Entwicklung von Intelligenz- und anderen Fachbegriffen in wissenschaftlichen
-					Publikationen.".
+					<bold class="font-bold">YACOID</bold> is an abbreviation for "<bold class="font-bold">Y</bold>et
+					<bold class="font-bold">A</bold>nother <bold class="font-bold">C</bold>ollection
+					<bold class="font-bold">o</bold>f <bold class="font-bold">I</bold>ntelligent <bold class="font-bold">D</bold>efinitions".
+					The project's aim is to provide scientific defintions according to all areas of intelligence.
+					Researchers and interested people should easily access a collection of disambiguations.
+					It was created as part of a study project at the University of Economics and Law.
 				</p>
 			</section>
 		</div>
