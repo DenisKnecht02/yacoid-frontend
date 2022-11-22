@@ -1,7 +1,5 @@
 <script lang="ts" src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous">
 	import { changeRoute } from '../utils';
-	import FilteringAuthorModal from './FilteringAuthorModal.svelte';
-	import NavList from './NavList.svelte';
 </script>
 
 <header>
@@ -19,7 +17,7 @@
 			<button class="btn btn-secondary w-40" on:click={() => changeRoute('about_us')}
 				>About us</button
 			>
-			<button class="btn btn-secondary w-40" on:click={() => changeRoute('login')}>Login</button>
+			<button class="btn btn-secondary w-40" on:click={() => changeRoute('auth')}>Login</button>
 		</div>
 	</div>
 </header>
@@ -46,7 +44,6 @@
 		</div>
 	</div>
 </header> -->
-
 <style lang="postcss">
 	header {
 		@apply p-4 w-full gap-2 bg-base-200;
