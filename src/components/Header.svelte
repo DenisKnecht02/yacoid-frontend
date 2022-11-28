@@ -1,49 +1,75 @@
 <script lang="ts" src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous">
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import { changeRoute } from '../utils';
+	import Icon from './Icon.svelte';
+	export let drawer: string = '';
+
+	let mobileView: boolean = false;
+
+	onMount(() => {
+		// change Header based on screen width
+		const mql = window.matchMedia('(max-width: 1024px');
+		mobileView = mql.matches;
+
+		mql.addEventListener('change', (e) => {
+			mobileView = mql.matches;
+			console.log(mobileView);
+		});
+	});
 </script>
 
 <header>
-	<div class="flex flex-wrap w-full justify-center lg:justify-between">
-		<!-- <h1 class="text-4xl font-bold mb-6">YACOID</h1> -->
-		<img class="w-72" src="/yacoid.png" on:click={() => changeRoute('')} />
+	<div class="flex gap-4 flex-row w-full justify-between items-center">
+		<img
+			class="w-[14rem] sm:w-[16rem] md:w-[18rem] cursor-pointer"
+			src="/yacoid.png"
+			on:click={() => changeRoute(goto, '')}
+			alt=""
+		/>
 
-		<div class="grid grid-cols-2 gap-2 items-center sm:flex">
-			<button class="btn btn-secondary w-40" on:click={() => changeRoute('definitions/submissions')}
-				>Submissions</button
-			>
-			<button class="btn btn-secondary w-40" on:click={() => changeRoute('definitions')}
-				>All Definitions</button
-			>
-			<button class="btn btn-secondary w-40" on:click={() => changeRoute('about_us')}
-				>About us</button
-			>
-			<button class="btn btn-secondary w-40" on:click={() => changeRoute('auth')}>Login</button>
-		</div>
+		{#if mobileView}
+			{#if drawer !== ''}
+				<label for={drawer} class="btn w-fit h-fit drawer-button">
+					<Icon icon="menu" color="#00000" strokeWidth="1.5" />
+				</label>
+			{/if}
+		{:else}
+			<div class="flex gap-8 items-center">
+				<button
+					class="text-base lg:text-lg font-medium hover:underline hover:text-blue-500"
+					on:click={() => changeRoute(goto, 'definitions/submissions')}>Submissions</button
+				>
+				<button
+					class="text-base lg:text-lg font-medium hover:underline hover:text-blue-500"
+					on:click={() => changeRoute(goto, 'definitions')}>All Definitions</button
+				>
+				<button
+					class="text-base lg:text-lg font-medium hover:underline hover:text-blue-500"
+					on:click={() => changeRoute(goto, 'about_us')}>About us</button
+				>
+				<button
+					class="text-base lg:text-lg font-medium hover:underline hover:text-blue-500"
+					on:click={() => changeRoute(goto, 'auth')}>Login</button
+				>
+				<button
+					class="btn btn-ghost btn-circle avatar"
+					on:click={() => changeRoute(goto, 'profile')}
+				>
+					<div class="w-10 rounded-full">
+						<!-- svelte-ignore a11y-img-redundant-alt -->
+						<img
+							src="https://www.marketingmuses.com/wp-content/uploads/2018/01/invis-user.png"
+							alt="profile image"
+							class="w-72 md:w-80 lg:w-96 rounded-full"
+						/>
+					</div>
+				</button>
+			</div>
+		{/if}
 	</div>
 </header>
 
-<!-- <header>
-	<div class="flex flex-wrap w-full justify-between">  //this works as a dissapearing menu if not mobile
-		<h1 class="text-4xl font-bold">YACOID</h1>
-    <label class="peer sm:hidden btn modal-button">Menu</label>
-    <div class="gap-2 hidden peer-hover:flex peer-hover:justify-center">
-			<button class="btn btn-secondary" on:click={() => changeRoute('definitions/submissions')}>Sub</button>
-			<button class="btn btn-secondary" on:click={() => changeRoute('definitions')}
-				>All</button
-			>
-			<button class="btn btn-secondary" on:click={() => changeRoute('about_us')}>Ab</button>
-			<button class="btn btn-secondary" on:click={() => changeRoute('login')}>Lo</button>
-		</div>
-		<div class="gap-2 hidden sm:flex">
-			<button class="btn btn-secondary" on:click={() => changeRoute('definitions/submissions')}>Submissions</button>
-			<button class="btn btn-secondary" on:click={() => changeRoute('definitions')}
-				>All Definitions</button
-			>
-			<button class="btn btn-secondary" on:click={() => changeRoute('about_us')}>About us</button>
-			<button class="btn btn-secondary" on:click={() => changeRoute('login')}>Login</button>
-		</div>
-	</div>
-</header> -->
 <style lang="postcss">
 	header {
 		@apply p-4 w-full gap-2 bg-base-200;

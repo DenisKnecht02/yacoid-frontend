@@ -1,22 +1,23 @@
 <script lang="ts">
+	import type { Category } from '$types';
 	import FilteringSelectionButton from './FilteringSelectionButton.svelte';
 
-	export let allCategories: string[];
+	export let allCategories: Category[];
+	export let selectedCategories: Category[];
 	export let modalName: string;
 	export let setSelectedCategories: Function;
 
-	let selectedCategories: string[] = [...allCategories];
 	let allSelected: boolean = true;
 
-	function changeSingleSelected(category: string) {
+	function changeSingleSelected(category: Category) {
 		if (selectedCategories.includes(category)) {
-			const index = selectedCategories.indexOf(category);
-			if (index !== -1) {
-				selectedCategories.splice(index, 1);
-			}
+			selectedCategories = [...allCategories].filter(function (element) {
+				return category === element;
+			});
 		} else {
 			selectedCategories.push(category);
 		}
+
 		allSelected = selectedCategories.length === allCategories.length;
 		selectedCategories = selectedCategories;
 	}
@@ -30,7 +31,6 @@
 		allSelected = truthState;
 		selectedCategories = selectedCategories;
 	}
-
 </script>
 
 <input type="checkbox" id={modalName} class="modal-toggle" />
@@ -56,9 +56,19 @@
 			</button>
 		</div>
 		<div class="flex modal-action justify-self-end">
-			<label for={modalName} class="btn" on:click={() => setSelectedCategories(selectedCategories)}
-				>Filter</label
+			<label
+				for={modalName}
+				class="btn btn-error"
+				on:click={() => {
+					selectedCategories = [...allCategories];
+					setSelectedCategories(selectedCategories);
+				}}
 			>
+				Cancel
+			</label>
+			<label for={modalName} class="btn" on:click={() => setSelectedCategories(selectedCategories)}>
+				Filter
+			</label>
 		</div>
 	</div>
 </div>
