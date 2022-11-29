@@ -31,9 +31,9 @@
 	let allDefinitions: Definition[] = [
 		{
 			id: 1,
-			category: 'Artificial Intelligence',
+			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
-			publishing_date: '1992',
+			publishingDate: new Date(1996),
 			quote:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
@@ -42,9 +42,9 @@
 		},
 		{
 			id: 2,
-			category: 'Artificial Intelligence',
+			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
-			publishing_date: '1992',
+			publishingDate: new Date(1996),
 			quote:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
@@ -53,9 +53,9 @@
 		},
 		{
 			id: 3,
-			category: 'Artificial Intelligence',
+			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
-			publishing_date: '1992',
+			publishingDate: new Date(1996),
 			quote:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
@@ -64,9 +64,9 @@
 		},
 		{
 			id: 4,
-			category: 'Artificial Intelligence',
+			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
-			publishing_date: '1992',
+			publishingDate: new Date(1996),
 			quote:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
@@ -75,9 +75,9 @@
 		},
 		{
 			id: 5,
-			category: 'Artificial Intelligence',
+			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
-			publishing_date: '1992',
+			publishingDate: new Date(1996),
 			quote:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
@@ -86,9 +86,9 @@
 		},
 		{
 			id: 6,
-			category: 'Human Intelligence',
+			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
-			publishing_date: '2001',
+			publishingDate: new Date(1996),
 			quote: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -96,9 +96,9 @@
 		},
 		{
 			id: 7,
-			category: 'Human Intelligence',
+			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
-			publishing_date: '2001',
+			publishingDate: new Date(1996),
 			quote: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -106,9 +106,9 @@
 		},
 		{
 			id: 8,
-			category: 'Human Intelligence',
+			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
-			publishing_date: '2001',
+			publishingDate: new Date(1996),
 			quote: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -116,9 +116,9 @@
 		},
 		{
 			id: 9,
-			category: 'Human Intelligence',
+			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
-			publishing_date: '2001',
+			publishingDate: new Date(1996),
 			quote: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -126,9 +126,9 @@
 		},
 		{
 			id: 10,
-			category: 'Human Intelligence',
+			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
-			publishing_date: '2001',
+			publishingDate: new Date(1996),
 			quote: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -136,9 +136,9 @@
 		},
 		{
 			id: 11,
-			category: 'Machine Intelligence',
+			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
-			publishing_date: '2007',
+			publishingDate: new Date(1996),
 			quote: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -146,9 +146,9 @@
 		},
 		{
 			id: 12,
-			category: 'Machine Intelligence',
+			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
-			publishing_date: '2007',
+			publishingDate: new Date(1996),
 			quote: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -156,9 +156,9 @@
 		},
 		{
 			id: 13,
-			category: 'Machine Intelligence',
+			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
-			publishing_date: '2007',
+			publishingDate: new Date(1996),
 			quote: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -166,9 +166,9 @@
 		},
 		{
 			id: 14,
-			category: 'Machine Intelligence',
+			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
-			publishing_date: '2007',
+			publishingDate: new Date(1996),
 			quote: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -176,9 +176,9 @@
 		},
 		{
 			id: 15,
-			category: 'Machine Intelligence',
+			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
-			publishing_date: '2007',
+			publishingDate: new Date(1996),
 			quote: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -359,7 +359,7 @@
 						author={definition.author}
 						category={definition.category}
 						quote={definition.quote}
-						publishing_date={definition.publishing_date}
+						publishingDate={definition.publishingDate}
 						source={definition.source}
 					/>
 				{/if}

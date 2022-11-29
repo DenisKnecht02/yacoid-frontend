@@ -45,31 +45,31 @@
 
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 justify-around">
 				<QuoteCard
-					category="Machine Intelligence"
+					category="machine_intelligence"
 					quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
 					author="Winston, P.H."
-					publishing_date="1992"
+					publishingDate={new Date('1992-11-21')}
 				/>
 
 				<QuoteCard
-					category="Machine Intelligence"
+					category="machine_intelligence"
 					quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
 					author="Winston, P.H."
-					publishing_date="1992"
+					publishingDate={new Date(1992)}
 				/>
 
 				<QuoteCard
-					category="Machine Intelligence"
+					category="machine_intelligence"
 					quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
 					author="Winston, P.H."
-					publishing_date="1992"
+					publishingDate={new Date(1992)}
 				/>
 
 				<QuoteCard
-					category="Machine Intelligence"
+					category="machine_intelligence"
 					quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
 					author="Winston, P.H."
-					publishing_date="1992"
+					publishingDate={new Date(1992)}
 				/>
 			</div>
 			<div class="flex my-6 justify-center lg:justify-end">

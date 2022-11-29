@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AllCategories } from '$types';
+	import { AllCategories, CategoryLabel } from '$types';
 </script>
 
 <main>
@@ -48,7 +48,7 @@
 					</label>
 					<select class="select w-full border border-gray-300">
 						{#each AllCategories as category}
-							<option>{category}</option>
+							<option>{CategoryLabel[category]}</option>
 						{/each}
 					</select>
 				</div>

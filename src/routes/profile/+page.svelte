@@ -57,44 +57,44 @@
 	let submittedDefinitions: Definition[] = [
 		{
 			id: 7,
-			category: 'Human Intelligence',
+			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
-			publishing_date: '1991',
+			publishingDate: new Date(1996),
 			quote:
 				'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1991.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21'),
 			status: {
-				status: 'Approved'
+				status: 'approved'
 			}
 		},
 		{
 			id: 8,
-			category: 'Human Intelligence',
+			category: 'human_intelligence',
 			author: 'Winston, P.H.',
-			publishing_date: '1996',
+			publishingDate: new Date(1996),
 			quote:
 				'Human Intelligence is a subfield of intelligence that deals with understanding how human think.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1996.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21'),
 			status: {
-				status: 'Declined',
+				status: 'declined',
 				declinementMessage: "The source doesn't seem to be valid, please update it."
 			}
 		},
 		{
 			id: 9,
-			category: 'Artificial Intelligence',
+			category: 'artificial_intelligence',
 			author: 'George, Fred',
-			publishing_date: '1994',
+			publishingDate: new Date(1996),
 			quote: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1994.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-20'),
 			status: {
-				status: 'Pending'
+				status: 'pending'
 			}
 		}
 	];
@@ -746,9 +746,9 @@
 									<td>
 										<p
 											class={`${
-												submittedDefinition.status?.status === 'Approved' && 'text-success'
-											} ${submittedDefinition.status?.status === 'Pending' && 'text-warning'} ${
-												submittedDefinition.status?.status === 'Declined' && 'text-error'
+												submittedDefinition.status?.status === 'approved' && 'text-success'
+											} ${submittedDefinition.status?.status === 'pending' && 'text-warning'} ${
+												submittedDefinition.status?.status === 'declined' && 'text-error'
 											}`}
 										>
 											{submittedDefinition.status?.status}

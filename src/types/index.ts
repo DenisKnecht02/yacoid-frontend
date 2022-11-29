@@ -5,7 +5,7 @@ export type Definition = {
 	category: Category;
 	quote: string;
 	author: string;
-	publishing_date: string;
+	publishingDate: Date;
 	source: string;
 	submittedBy: string;
 	submittedOn: Date;
@@ -13,7 +13,7 @@ export type Definition = {
 };
 
 export type DefinitionStatus = {
-	status: 'Approved' | 'Pending' | 'Declined';
+	status: 'approved' | 'pending' | 'declined';
 	declinementMessage?: string;
 };
 
@@ -90,15 +90,27 @@ export type Gender = 'male' | 'female' | 'diverse';
 export const Genders: Gender[] = ['male', 'female', 'diverse'];
 
 export type Category =
-	| 'Human Intelligence'
-	| 'Artificial Intelligence'
-	| 'Machine Intelligence'
-	| 'Plant Intelligence'
-	| 'Alien Intelligence';
+	| 'human_intelligence'
+	| 'artificial_intelligence'
+	| 'machine_intelligence'
+	| 'plant_intelligence'
+	| 'alien_intelligence';
 export const AllCategories: Category[] = [
-	'Human Intelligence',
-	'Artificial Intelligence',
-	'Machine Intelligence',
-	'Plant Intelligence',
-	'Alien Intelligence'
+	'human_intelligence',
+	'artificial_intelligence',
+	'machine_intelligence',
+	'plant_intelligence',
+	'alien_intelligence'
 ];
+
+type CategoryLabelObject = {
+	[index in Category]: string;
+};
+
+export const CategoryLabel: CategoryLabelObject = {
+	human_intelligence: 'Human Intelligence',
+	artificial_intelligence: 'Artificial Intelligence',
+	alien_intelligence: 'Alien Intelligence',
+	machine_intelligence: 'Machine Intelligence',
+	plant_intelligence: 'Plant Intelligence'
+};
