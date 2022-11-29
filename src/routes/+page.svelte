@@ -5,6 +5,22 @@
 	import StatisticCard from '../components/StatisticCard.svelte';
 	import { changeRoute } from '$utils';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import type { Definition } from '$types';
+	import { fetchNewestDefinitions } from '$api/definitions';
+
+	let newestDefinitions: Definition[] = [];
+
+	onMount(() => {
+		(async () => {
+			const response = await fetchNewestDefinitions();
+			if (response.error) {
+				console.log(response.error);
+			} else {
+				newestDefinitions = response.data!;
+			}
+		})();
+	});
 </script>
 
 <main>
@@ -44,33 +60,14 @@
 			<h1 class="text-2xl font-bold md:text-3xl lg:text-4xl pb-10">SEE OUR NEWEST DEFINITIONS!</h1>
 
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 justify-around">
-				<QuoteCard
-					category="machine_intelligence"
-					quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
-					author="Winston, P.H."
-					publishingDate={new Date('1992-11-21')}
-				/>
-
-				<QuoteCard
-					category="machine_intelligence"
-					quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
-					author="Winston, P.H."
-					publishingDate={new Date(1992)}
-				/>
-
-				<QuoteCard
-					category="machine_intelligence"
-					quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
-					author="Winston, P.H."
-					publishingDate={new Date(1992)}
-				/>
-
-				<QuoteCard
-					category="machine_intelligence"
-					quote="Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act."
-					author="Winston, P.H."
-					publishingDate={new Date(1992)}
-				/>
+				{#each newestDefinitions as definition}
+					<QuoteCard
+						category={definition.category}
+						quote={definition.quote}
+						author={definition.author}
+						publishingDate={definition.publishingDate}
+					/>
+				{/each}
 			</div>
 			<div class="flex my-6 justify-center lg:justify-end">
 				<button class="btn btn-secondary" on:click={() => changeRoute(goto, 'definitions')}

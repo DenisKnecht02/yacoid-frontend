@@ -6,10 +6,17 @@
 	import Icon from '$components/Icon.svelte';
 	import FilterBadge from '$components/FilterBadge.svelte';
 	import { AllCategories, type Category, type Definition } from '$types';
+	import { onMount } from 'svelte';
+	import { fetchPageCount } from '$api/definitions';
+	import { changeRoute } from '$utils';
 
-	function changeRoute(href: string) {
-		goto('/' + href);
-	}
+	let pageCount: number = 0;
+
+	onMount(() => {
+		(async () => {
+			await getPageCount();
+		})();
+	});
 
 	// for pagination logic (will be redundant if we send a new query for each page)
 	let maxDefinitionPerPage: number = 10;
@@ -260,6 +267,15 @@
 		filteredDefinitions = [...allDefinitions];
 	}
 
+	async function getPageCount() {
+		const response = await fetchPageCount({ pageSize: 10 });
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			pageCount = response.data!;
+		}
+	}
+
 	calculateAmountOfPages();
 </script>
 
@@ -320,7 +336,7 @@
 						<li><button>JSON</button></li>
 					</ul>
 				</div>
-				<button class="btn gap-1" on:click={() => changeRoute('definitions/addDef')}>
+				<button class="btn gap-1" on:click={() => changeRoute(goto, 'definitions/addDef')}>
 					<Icon icon="file-plus" color="#00000" />
 					<span class="hidden md:flex">Submit definition</span>
 				</button>
