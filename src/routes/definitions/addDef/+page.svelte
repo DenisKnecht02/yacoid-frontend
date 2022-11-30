@@ -1,5 +1,13 @@
 <script lang="ts">
-	import { AllCategories, CategoryLabel } from '$types';
+	import Icon from '$components/Icon.svelte';
+	import { AllCategories, CategoryLabel, type AuthorType } from '$types';
+
+	let suggestedAuthors: string[] = ['Author1', 'Author2', 'Author3', 'Author4', 'Author5'];
+	let authorSearchCriteria: string = '';
+	let authorType: AuthorType = 'person';
+	let authorFirstName: string = '';
+	let authorLastName: string = '';
+	let authorOrganizationName: string = '';
 </script>
 
 <main>
@@ -7,15 +15,98 @@
 		<div class="card  grid justify-center w-full shadow-2xl bg-base-100">
 			<form class="card-body w-fit md:w-screen gap-4" action="./">
 				<div class="form-control grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-4 md:px-8">
-					<label class="label">
+					<label class="label" for="">
 						<span class="text-bold text-lg">Author</span>
 					</label>
-					<input
-						type="text"
-						placeholder="Author name..."
-						class="input input-bordered col-span-2"
-						required
-					/>
+					<div class="flex gap-1 w-full col-span-2">
+						<div class="dropdown dropdown-bottom w-full">
+							<label tabindex="0">
+								<input
+									type="text"
+									placeholder="Author name..."
+									class="input input-bordered w-full"
+									bind:value={authorSearchCriteria}
+									required
+								/>
+							</label>
+							<ul tabindex="0" class="dropdown-content w-full menu shadow bg-base-100 rounded-b-lg">
+								{#each suggestedAuthors as suggestedAuthor}
+									{#if suggestedAuthor.toLowerCase().includes(authorSearchCriteria.toLowerCase())}
+										<li>
+											<div
+												class="flex items-center justify-between"
+												on:click={() => {
+													authorSearchCriteria = suggestedAuthor;
+												}}
+											>
+												<p class="text-base">
+													{suggestedAuthor}
+												</p>
+											</div>
+										</li>
+									{/if}
+								{/each}
+							</ul>
+						</div>
+						<!-- The button to open modal -->
+						<div class="tooltip" data-tip="Create new">
+							<label for="authors-modal" class="btn btn-square btn-secondary">
+								<Icon icon="plus" />
+							</label>
+						</div>
+
+						<!-- Put this part before </body> tag -->
+						<input type="checkbox" id="authors-modal" class="modal-toggle" />
+						<label for="authors-modal" class="modal cursor-pointer">
+							<label class="modal-box relative w-[50vw] h-fit" for="">
+								<div class="flex flex-col gap-6 w-full h-full">
+									<h1 class="text-xl md:text-2xl font-bold">Create new author</h1>
+									<div class="form-control grid grid-cols-1 md:grid-cols-2 gap-4">
+										<p class="text-base md:text-lg font-medium">Choose author type:</p>
+										<select class="select w-full max-w-xs" bind:value={authorType} required>
+											<option>person</option>
+											<option>organization</option>
+										</select>
+										{#if authorType === 'person'}
+											<p class="text-base md:text-lg font-medium">First name:</p>
+											<input
+												type="text"
+												class="input input-bordered w-full"
+												bind:value={authorFirstName}
+												required
+											/>
+											<p class="text-base md:text-lg font-medium">Last name:</p>
+											<input
+												type="text"
+												class="input input-bordered w-full"
+												bind:value={authorLastName}
+												required
+											/>
+										{:else}
+											<p class="text-base md:text-lg font-medium">Organization name:</p>
+											<input
+												type="text"
+												class="input input-bordered w-full"
+												bind:value={authorOrganizationName}
+												required
+											/>
+										{/if}
+									</div>
+								</div>
+								<div class="modal-action">
+									<label for="authors-modal" class="btn btn-error">Cancel</label>
+									<label
+										for="authors-modal"
+										class="btn btn-secondary"
+										disabled={(authorType === 'person' &&
+											(authorFirstName === '' || authorLastName === '')) ||
+											(authorType === 'organization' && authorOrganizationName === '')}
+										>Create</label
+									>
+								</div>
+							</label>
+						</label>
+					</div>
 				</div>
 				<div class="form-control grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-4 md:px-8">
 					<label class="label">
