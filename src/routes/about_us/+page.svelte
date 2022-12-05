@@ -3,15 +3,15 @@
 
 <main>
 	<div class="flex flex-col h-full w-full justify-center items-center gap-16 p-8">
-		<p class="text-3xl md:text-4xl font-bold mt-6">About YACOID</p>
+		<p class="text-3xl lg:text-4xl font-bold mt-6">About YACOID</p>
 		<div class="flex flex-col lg:flex-row w-full justify-around items-center gap-6 lg:gap-0">
-			<div class="headline  text-2xl md:text-4xl font-bold w-1/3 text-center">Meet the Team</div>
+			<div class="headline  text-2xl lg:text-4xl font-bold w-1/3 text-center">Meet the Team</div>
 			<div class="flex w-2/3 lg:mx-6">
 				<section
 					class="p-8 max-w-4xl xl:max-w-6xl 2xl:max-w-7xl text-center bg-base-100 shadow-2xl rounded-xl"
 				>
-					<div class="grid gap-x-6 lg:gap-x-12 md:grid-cols-4 mt-16">
-						<div class="mb-24 md:mb-0">
+					<div class="grid gap-x-6 lg:gap-x-12 lg:grid-cols-4 mt-16">
+						<div class="mb-24 lg:mb-0">
 							<div class="rounded-lg shadow-lg h-full block bg-base-200">
 								<div class="flex justify-center">
 									<div class="flex justify-center" style="margin-top: -75px">
@@ -56,7 +56,7 @@
 							</div>
 						</div>
 
-						<div class="mb-24 md:mb-0">
+						<div class="mb-24 lg:mb-0">
 							<div class="rounded-lg shadow-lg h-full block bg-base-200">
 								<div class="flex justify-center">
 									<div class="flex justify-center" style="margin-top: -75px">
@@ -89,7 +89,7 @@
 							</div>
 						</div>
 
-						<div class="mb-24 md:mb-0">
+						<div class="mb-24 lg:mb-0">
 							<div class="rounded-lg shadow-lg h-full block bg-base-200">
 								<div class="flex justify-center">
 									<div class="flex justify-center" style="margin-top: -75px">
@@ -194,7 +194,7 @@
 			</div>
 		</div>
 		<div class="flex flex-col lg:flex-row w-full justify-around items-center gap-6 lg:gap-0">
-			<div class="headline  text-2xl md:text-4xl font-bold w-1/3 text-center">
+			<div class="headline  text-2xl lg:text-4xl font-bold w-1/3 text-center">
 				YACOID - the Project
 			</div>
 			<div class="flex w-2/3 lg:m-6">

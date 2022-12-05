@@ -688,13 +688,13 @@
 									What happens when you delete your account?
 								</h1>
 								<p class="text-base lg:text-lg">
-									When you delete your account Kinker will delete all of your stored data and
+									When you delete your account YACOID will delete all of your stored data and
 									permanently close it. Once deleted, your account can't be restored.
 								</p>
 							</div>
 							<!-- The button to open modal -->
 							<label for="deleteAccountModal" class="btn btn-primary modal-button place-self-end"
-								>Delete account
+								>Request account deletion
 							</label>
 
 							<BasicModal
