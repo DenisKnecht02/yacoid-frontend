@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Category } from '$types';
+	import { CategoryLabel, type Category } from '$types';
 	import FilteringSelectionButton from './FilteringSelectionButton.svelte';
 
 	export let allCategories: Category[];
@@ -40,7 +40,7 @@
 		<div class="grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 			{#each allCategories as category}
 				<FilteringSelectionButton
-					name={category}
+					name={CategoryLabel[category]}
 					selected={selectedCategories.includes(category)}
 					on:click={() => changeSingleSelected(category)}
 				/>

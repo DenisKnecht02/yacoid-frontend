@@ -2,7 +2,13 @@
 	import Icon from '$components/Icon.svelte';
 	import { AllCategories, CategoryLabel, type AuthorType } from '$types';
 
-	let suggestedAuthors: string[] = ['Author1', 'Author2', 'Author3', 'Author4', 'Author5'];
+	let suggestedAuthors: string[] = [
+		'Winston, P.H.',
+		'Quinston, Elizabeth',
+		'Freg, Thomas',
+		'Schmindt, Lucas',
+		'Kasik, Nikolai'
+	];
 	let authorSearchCriteria: string = '';
 	let authorType: AuthorType = 'person';
 	let authorFirstName: string = '';
