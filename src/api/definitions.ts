@@ -1,5 +1,9 @@
-import type { Author, Category, Definition, Source } from '$types';
+import { convertArray, convertFetchedDefinitionToDefinition, type Author, type Category, type Definition, type FetchedDefinition, type Source } from '$types';
 import { fetchGetRequest, fetchPostRequest, type GenericResponse } from './api';
+
+type GetNewestFetchedDefinitionsResponse = {
+	definitions: FetchedDefinition[];
+};
 
 export type GetNewestDefinitionsResponse = {
 	definitions: Definition[];
@@ -8,16 +12,25 @@ export type GetNewestDefinitionsResponse = {
 export async function fetchNewestDefinitions(
 	limit: number = 4
 ): Promise<GenericResponse<Definition[]>> {
-	const response = await fetchGetRequest<GetNewestDefinitionsResponse>(
+	const response = await fetchGetRequest<GetNewestFetchedDefinitionsResponse>(
 		'definitions/newest_definitions',
 		{
 			limit: limit
 		}
 	);
+
+	let data: GetNewestDefinitionsResponse | undefined = undefined;
+
+	if (response.data) {
+		data = {
+			definitions: convertArray<FetchedDefinition, Definition>(response.data?.definitions, convertFetchedDefinitionToDefinition)
+		}
+	}
+
 	return {
 		message: response.message,
 		error: response.error,
-		data: response.data?.definitions
+		data: data?.definitions
 	};
 }
 

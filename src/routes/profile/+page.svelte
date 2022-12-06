@@ -60,7 +60,7 @@
 			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
 			publishingDate: new Date(1996),
-			quote:
+			content:
 				'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1991.',
 			submittedBy: 'Dr. Bert',
@@ -74,7 +74,7 @@
 			category: 'human_intelligence',
 			author: 'Winston, P.H.',
 			publishingDate: new Date(1996),
-			quote:
+			content:
 				'Human Intelligence is a subfield of intelligence that deals with understanding how human think.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1996.',
 			submittedBy: 'Dr. Bert',
@@ -89,7 +89,7 @@
 			category: 'artificial_intelligence',
 			author: 'George, Fred',
 			publishingDate: new Date(1996),
-			quote: 'This is a test definition.',
+			content: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1994.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-20'),
@@ -738,8 +738,8 @@
 									<th>{submittedDefinitions.indexOf(submittedDefinition) + 1}</th>
 									<td
 										><p>
-											{submittedDefinition.quote.substring(0, 50)}
-											{submittedDefinition.quote.length >= 50 ? '...' : ''}
+											{submittedDefinition.content.substring(0, 50)}
+											{submittedDefinition.content.length >= 50 ? '...' : ''}
 										</p></td
 									>
 									<td>{submittedDefinition.submittedOn.toLocaleDateString()}</td>

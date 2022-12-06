@@ -63,7 +63,7 @@
 				{#each newestDefinitions as definition}
 					<QuoteCard
 						category={definition.category}
-						quote={definition.quote}
+						content={definition.content}
 						author={definition.author}
 						publishingDate={definition.publishingDate}
 					/>

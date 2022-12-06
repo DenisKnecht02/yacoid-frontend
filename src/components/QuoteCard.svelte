@@ -2,7 +2,7 @@
 	import { CategoryLabel, type Category } from '$types';
 
 	export let category: Category;
-	export let quote: string = '';
+	export let content: string = '';
 	export let author: string = '';
 	export let publishingDate: Date;
 	export let source: string = '';
@@ -13,7 +13,7 @@
 		<div class="flex justify-between h-12 items-center">
 			<div class="badge badge-secondary text-base w-fit h-fit">{CategoryLabel[category]}</div>
 		</div>
-		<p class="flex italic text-xl text-justify items-center">"{quote}"</p>
+		<p class="flex italic text-xl text-justify items-center">"{content}"</p>
 		<div>
 			<p class="flex justify-end items-end font-bold">
 				- {author} ({publishingDate.toLocaleDateString()})

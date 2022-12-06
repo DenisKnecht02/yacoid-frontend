@@ -59,10 +59,13 @@ export async function fetchProtectedGetRequest<T>(
 			}
 		}
 
+		const headers = {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		};
+
 		fetch(url, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			},
+			headers: headers,
 			mode: 'cors'
 		})
 			.then((json) => json.json())
@@ -92,8 +95,13 @@ export async function fetchGetRequest<T>(
 			}
 		}
 
+		const headers = {
+			'Content-Type': 'application/json'
+		};
+
 		fetch(url, {
-			mode: 'cors'
+			mode: 'cors',
+			headers: headers
 		})
 			.then((json) => json.json())
 			.then((response: GenericResponse<T>) => {

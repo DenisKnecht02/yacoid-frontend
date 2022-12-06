@@ -1,9 +1,45 @@
+
+/*
+	Converts an array with items of type U to an array with items of type V
+	with help of an converter function, that converts an item from type U to V
+*/
+export function convertArray<U, V>(array: U[], converter: ((item: U) => V)): V[] {
+
+	const convertedArray: V[] = [];
+
+	for (const item of array) {
+		convertedArray.push(converter(item));
+	}
+
+	return convertedArray;
+
+}
+
 export type AuthorType = 'person' | 'organization';
+
+export type FetchedDefinition = {
+	id: number;
+	category: Category;
+	content: string;
+	author: string;
+	publishingDate: string;
+	source: string;
+	submittedBy: string;
+	submittedOn: Date;
+	status?: DefinitionStatus;
+}
+
+export function convertFetchedDefinitionToDefinition(fetchedDefinition: FetchedDefinition): Definition {
+	return {
+		...fetchedDefinition,
+		publishingDate: new Date(fetchedDefinition.publishingDate)
+	}
+}
 
 export type Definition = {
 	id: number;
 	category: Category;
-	quote: string;
+	content: string;
 	author: string;
 	publishingDate: Date;
 	source: string;
