@@ -41,7 +41,7 @@
 			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
 			publishingDate: new Date(1996),
-			quote:
+			content:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -52,7 +52,7 @@
 			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
 			publishingDate: new Date(1996),
-			quote:
+			content:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -63,7 +63,7 @@
 			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
 			publishingDate: new Date(1996),
-			quote:
+			content:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -74,7 +74,7 @@
 			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
 			publishingDate: new Date(1996),
-			quote:
+			content:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -85,7 +85,7 @@
 			category: 'artificial_intelligence',
 			author: 'Winston, P.H.',
 			publishingDate: new Date(1996),
-			quote:
+			content:
 				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
@@ -96,7 +96,7 @@
 			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
 			publishingDate: new Date(1996),
-			quote: 'This is a test definition.',
+			content: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -106,7 +106,7 @@
 			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
 			publishingDate: new Date(1996),
-			quote: 'This is a test definition.',
+			content: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -116,7 +116,7 @@
 			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
 			publishingDate: new Date(1996),
-			quote: 'This is a test definition.',
+			content: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -126,7 +126,7 @@
 			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
 			publishingDate: new Date(1996),
-			quote: 'This is a test definition.',
+			content: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -136,7 +136,7 @@
 			category: 'human_intelligence',
 			author: 'Quinston, Elizabeth',
 			publishingDate: new Date(1996),
-			quote: 'This is a test definition.',
+			content: 'This is a test definition.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -146,7 +146,7 @@
 			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
 			publishingDate: new Date(1996),
-			quote: 'Machine Intelligence is currently undefined.',
+			content: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -156,7 +156,7 @@
 			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
 			publishingDate: new Date(1996),
-			quote: 'Machine Intelligence is currently undefined.',
+			content: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -166,7 +166,7 @@
 			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
 			publishingDate: new Date(1996),
-			quote: 'Machine Intelligence is currently undefined.',
+			content: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -176,7 +176,7 @@
 			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
 			publishingDate: new Date(1996),
-			quote: 'Machine Intelligence is currently undefined.',
+			content: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -186,7 +186,7 @@
 			category: 'machine_intelligence',
 			author: 'Freg, Thomas',
 			publishingDate: new Date(1996),
-			quote: 'Machine Intelligence is currently undefined.',
+			content: 'Machine Intelligence is currently undefined.',
 			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
 			submittedBy: 'Dr. Bert',
 			submittedOn: new Date('2022-11-21')
@@ -225,7 +225,7 @@
 	function filterDefinitions() {
 		filteredDefinitions = [...allDefinitions].filter(function (element) {
 			return (
-				element.quote.includes(searchCriteria) &&
+				element.content.includes(searchCriteria) &&
 				selectedCategories.includes(element.category as Category) &&
 				selectedAuthors.includes(element.author)
 			);
@@ -374,7 +374,7 @@
 					<QuoteCard
 						author={definition.author}
 						category={definition.category}
-						quote={definition.quote}
+						content={definition.content}
 						publishingDate={definition.publishingDate}
 						source={definition.source}
 					/>

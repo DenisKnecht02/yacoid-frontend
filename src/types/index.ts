@@ -1,10 +1,8 @@
-
 /*
 	Converts an array with items of type U to an array with items of type V
 	with help of an converter function, that converts an item from type U to V
 */
-export function convertArray<U, V>(array: U[], converter: ((item: U) => V)): V[] {
-
+export function convertArray<U, V>(array: U[], converter: (item: U) => V): V[] {
 	const convertedArray: V[] = [];
 
 	for (const item of array) {
@@ -12,7 +10,6 @@ export function convertArray<U, V>(array: U[], converter: ((item: U) => V)): V[]
 	}
 
 	return convertedArray;
-
 }
 
 export type AuthorType = 'person' | 'organization';
@@ -27,13 +24,15 @@ export type FetchedDefinition = {
 	submittedBy: string;
 	submittedOn: Date;
 	status?: DefinitionStatus;
-}
+};
 
-export function convertFetchedDefinitionToDefinition(fetchedDefinition: FetchedDefinition): Definition {
+export function convertFetchedDefinitionToDefinition(
+	fetchedDefinition: FetchedDefinition
+): Definition {
 	return {
 		...fetchedDefinition,
 		publishingDate: new Date(fetchedDefinition.publishingDate)
-	}
+	};
 }
 
 export type Definition = {
@@ -83,35 +82,37 @@ export type Source = {
 	submittedDate: Date;
 	type: SourceType;
 	authors: string[]; // ids of authors
-	title: string;
 };
 
 export type BookSource = Source & {
-	publicationDate: Date;
-	publicationPlace: string;
+	title: string;
 	pagesFrom: number;
 	pagesTo: number;
+	publicationDate: Date;
+	publicationPlace?: string;
 	edition?: string;
 	publisher?: string;
 	isbn?: string;
 	ean?: string;
 	doi?: string;
-	web?: WebSourceProps;
 };
 
 export type JournalSource = Source & {
+	title: string;
 	articleName: string;
-	publicationDate: Date;
-	publicationPlace: string;
 	pagesFrom: number;
 	pagesTo: number;
-	doi?: string;
+	publicationDate: Date;
+	publicationPlace?: string;
 	edition?: string;
 	publisher?: string;
+	doi?: string;
 };
 
 export type WebSourceProps = {
+	articleName: string;
 	url: string;
+	websiteName: string;
 	accessDate: Date;
 	publicationDate?: Date;
 };
