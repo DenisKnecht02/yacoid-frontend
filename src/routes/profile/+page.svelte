@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { Genders, type Definition, type Gender } from '$types';
 	import BasicModal from '$components/BasicModal.svelte';
+	import SubmitDetail from '$components/SubmitDetail.svelte';
 
 	let currentNickname: string = 'alecpope';
 	let nicknameEditable: boolean = false;
@@ -56,20 +57,6 @@
 
 	let submittedDefinitions: Definition[] = [
 		{
-			id: 7,
-			category: 'human_intelligence',
-			author: 'Quinston, Elizabeth',
-			publishingDate: new Date(1996),
-			content:
-				'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1991.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21'),
-			status: {
-				status: 'approved'
-			}
-		},
-		{
 			id: 8,
 			category: 'human_intelligence',
 			author: 'Winston, P.H.',
@@ -82,6 +69,20 @@
 			status: {
 				status: 'declined',
 				declinementMessage: "The source doesn't seem to be valid, please update it."
+			}
+		},
+		{
+			id: 7,
+			category: 'human_intelligence',
+			author: 'Quinston, Elizabeth',
+			publishingDate: new Date(1996),
+			content:
+				'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
+			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1991.',
+			submittedBy: 'Dr. Bert',
+			submittedOn: new Date('2022-11-21'),
+			status: {
+				status: 'approved'
 			}
 		},
 		{
@@ -731,9 +732,21 @@
 						</thead>
 						<tbody>
 							{#each submittedDefinitions as submittedDefinition}
+							<label for="modal_accept1">
+								<SubmitDetail
+									modalName="modal_accept1"
+									modalTitle="Details on your submitted definition"
+									submitDate={submittedDefinition.submittedOn.toDateString()}
+									submitDef={submittedDefinition.content}
+									submitFeedback={submittedDefinition.status?.declinementMessage}
+									submitStatus={submittedDefinition.status?.status}
+									submitPublishing_date={submittedDefinition.publishingDate.toDateString()}
+									submitAuthor={submittedDefinition.author}
+									submitSource={submittedDefinition.source}
+								/>
 								<tr
 									class="hover:active cursor-pointer"
-									on:click={() => alert('Now the modal should open to see details')}
+
 								>
 									<th>{submittedDefinitions.indexOf(submittedDefinition) + 1}</th>
 									<td
@@ -755,6 +768,7 @@
 										</p>
 									</td>
 								</tr>
+							</label>
 							{/each}
 						</tbody>
 					</table>
@@ -763,6 +777,8 @@
 		</div>
 	</div>
 </main>
+
+
 
 <style lang="postcss">
 </style>
