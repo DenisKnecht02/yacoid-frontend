@@ -5,7 +5,6 @@
   export let submitFeedback: string = '';
   export let submitDef: string = '';
   export let submitDate: string = '';
-  export let submittedBy: string = '';
   export let submitAuthor: string = '';
   export let submitPublishing_date: string = '';
   export let submitSource: string = '';
@@ -26,32 +25,19 @@
       
         {#if submitStatus == "approved"}
         <p class="text-base lg:text-lg py-4 pb-6">The following definition that you have submitted on {submitDate} has been accepted</p>
-        <h5 class="text-base lg:text-lg font-bold text-gray-600">Definition:</h5>
-        <div>
-          <p class="text-base lg:text-lg py-4">"{submitDef}"</p>
-          <p class="flex justify-end items-end font-bold">- {submitAuthor} ({submitPublishing_date})</p>
-          <p class="flex justify-end items-end italic pb-6">from: {submitSource}</p>
-        </div>
         {:else if submitStatus == "pending"}
         <p class="text-base lg:text-lg py-4 pb-6">The following definition that you have submitted on {submitDate} is still pending to be accepted</p>
-        <h5 class="text-base lg:text-lg font-bold text-gray-600">Definition:</h5>
-        <div>
-          <p class="text-base lg:text-lg py-4">"{submitDef}"</p>
-          <p class="flex justify-end items-end font-bold">- {submitAuthor} ({submitPublishing_date})</p>
-          <p class="flex justify-end items-end italic pb-6">from: {submitSource}</p>
-        </div>
         {:else if submitStatus == "declined"}
         <p class="text-base lg:text-lg py-4 pb-6">The following definition that you have submitted on {submitDate} has been rejected. Please read the message!</p>
-        <h5 class="text-base lg:text-lg font-bold text-gray-600">Definition:</h5>
-        <div>
-          <p class="text-base lg:text-lg py-4">"{submitDef}"</p>
-          <p class="flex justify-end items-end font-bold">- {submitAuthor} ({submitPublishing_date})</p>
-          <p class="flex justify-end items-end italic pb-6">from: {submitSource}</p>
-        </div>
         <h5 class="text-base lg:text-lg font-bold text-gray-600">Messsage:</h5>
         <p class="text-base lg:text-lg py-4">{submitFeedback}</p>
         {/if}
-      
+        <h5 class="text-base lg:text-lg font-bold text-gray-600 pt-6">Definition:</h5>
+        <div>
+          <p class="text-base lg:text-lg py-4 flex italic text-justify items-center">"{submitDef}"</p>
+          <p class="flex justify-end items-end font-bold">- {submitAuthor} ({submitPublishing_date})</p>
+          <p class="flex justify-end items-end italic">from: {submitSource}</p>
+        </div>
     </div>
   </label>
 </label>
