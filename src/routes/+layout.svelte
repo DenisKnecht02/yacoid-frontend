@@ -1,11 +1,21 @@
 <script lang="ts">
 	import '../app.css';
+	import { onMount } from 'svelte';
 	import { AuthorizerProvider } from '@authorizerdev/authorizer-svelte';
 	import '@authorizerdev/authorizer-svelte/styles/default.css';
 	import { goto } from '$app/navigation';
 	import Header from '$components/Header.svelte';
 	import Footer from '$components/Footer.svelte';
 	import { changeRoute } from '$utils';
+
+	let authUrl: string = '';
+
+	onMount(() => {
+		authUrl = import.meta.env['VITE_AUTH_URL'] || '';
+		if (authUrl[authUrl.length - 1] == '/') {
+			authUrl = authUrl.slice(0, authUrl.length - 1);
+		}
+	});
 </script>
 
 <div class="drawer">
@@ -13,7 +23,7 @@
 	<div class="drawer-content w-full h-full">
 		<AuthorizerProvider
 			config={{
-				authorizerURL: import.meta.env['VITE_AUTH_URL'],
+				authorizerURL: import.meta.env['VITE_AUTH_URL'] || '',
 				redirectURL: typeof window != 'undefined' ? window.location.origin : ``,
 				client_id: import.meta.env['VITE_AUTH_CLIENT_ID'],
 				is_sign_up_enabled: true,
