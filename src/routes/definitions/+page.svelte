@@ -14,6 +14,7 @@
 		fetchSubmitDefinition
 	} from '$api/definitions';
 	import { changeRoute } from '$utils';
+	import { session } from '$stores/session';
 
 	let pageCount: number = 0;
 	let definitions: Definition[] = [];
@@ -23,11 +24,11 @@
 	onMount(() => {
 		(async () => {
 			//await getPageCount();
-			//await getDefinitions();
+			await submitDefinition();
+			await getDefinitions();
 			//console.log(definitions);
 			//filteredDefinitions = [...definitions];
-			await submitDefinition();
-			console.log(definitionId);
+			//console.log(definitionId);
 		})();
 	});
 
@@ -297,9 +298,13 @@
 		}
 	}
 	async function submitDefinition() {
-		const response = await fetchSubmitDefinition({
-			title: 'New definition',
-			content: 'Test Content',
+		if ($session === undefined) {
+			console.log('Session is undefined.');
+			return;
+		}
+		const response = await fetchSubmitDefinition($session.id_token, {
+			title: 'Test',
+			content: 'This is a test.',
 			publishingDate: '2022-09-14T09:08:47.107Z',
 			category: 'artificial_intelligence',
 			sourceId: '63b2fb9fe075ef961a5f8a5b'

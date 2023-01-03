@@ -7,7 +7,13 @@ import {
 	type FetchedDefinition,
 	type Source
 } from '$types';
-import { fetchGetRequest, fetchPostRequest, type FetchParams, type GenericResponse } from './api';
+import {
+	fetchGetRequest,
+	fetchPostRequest,
+	fetchProtectedPostRequest,
+	type FetchParams,
+	type GenericResponse
+} from './api';
 
 type GetFetchedDefinitionsResponse = {
 	definitions: FetchedDefinition[];
@@ -18,11 +24,11 @@ export type GetDefinitionsResponse = {
 };
 
 type GetFetchedDefinitionResponse = {
-	definiton: FetchedDefinition;
+	definition: FetchedDefinition;
 };
 
 export type GetDefinitionResponse = {
-	definiton: Definition;
+	definition: Definition;
 };
 
 export async function fetchNewestDefinitions(
@@ -121,14 +127,14 @@ export async function fetchDefinitionById(id: string): Promise<GenericResponse<D
 
 	if (response.data) {
 		data = {
-			definiton: convertFetchedDefinitionToDefinition(response.data?.definiton)
+			definition: convertFetchedDefinitionToDefinition(response.data?.definition)
 		};
 	}
 
 	return {
 		message: response.message,
 		error: response.error,
-		data: data?.definiton
+		data: data?.definition
 	};
 }
 
@@ -145,13 +151,36 @@ export type SubmitDefinitionResponse = {
 };
 
 export async function fetchSubmitDefinition(
+	token: string,
 	request: SubmitDefinitionRequest
 ): Promise<GenericResponse<string>> {
-	const response = await fetchPostRequest<SubmitDefinitionResponse>('definitions/submit', request);
+	const response = await fetchProtectedPostRequest<SubmitDefinitionResponse>(
+		token,
+		'definitions/submit',
+		request
+	);
 
 	return {
 		message: response.message,
 		error: response.error,
 		data: response.data?.definitonId
+	};
+}
+
+export type RejectDefinitionRequest = {
+	id: string;
+	content: string;
+};
+
+export async function fetchRejectDefinition(
+	token: string,
+	request: RejectDefinitionRequest
+): Promise<GenericResponse<string>> {
+	const response = await fetchProtectedPostRequest<string>(token, 'definitions/reject', request);
+
+	return {
+		message: response.message,
+		error: response.error,
+		data: response.data
 	};
 }

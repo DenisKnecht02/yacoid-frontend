@@ -40,6 +40,100 @@ export async function fetchPostRequest<T>(
 	});
 }
 
+export async function fetchProtectedPostRequest<T>(
+	token: string,
+	endpoint: string,
+	body: any,
+	headers?: HeadersInit
+): Promise<GenericResponse<T>> {
+	return new Promise<GenericResponse<T>>((resolve, reject) => {
+		let url: string = `${import.meta.env['VITE_API_URL']}/api/v1/${endpoint}`;
+
+		headers = {
+			...headers,
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json'
+		};
+
+		fetch(url, {
+			method: 'POST',
+			mode: 'cors',
+			headers: headers,
+			body: JSON.stringify(body)
+		})
+			.then((json) => json.json())
+			.then((response: GenericResponse<T>) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				console.error(`Failed to fetch ${endpoint}`);
+				console.error(error);
+				resolve(generateBrokenRequest(error));
+			});
+	});
+}
+
+export async function fetchPutRequest<T>(
+	endpoint: string,
+	body: any,
+	headers?: HeadersInit
+): Promise<GenericResponse<T>> {
+	return new Promise<GenericResponse<T>>((resolve, reject) => {
+		let url: string = `${import.meta.env['VITE_API_URL']}/api/v1/${endpoint}`;
+
+		headers = { ...headers, 'Content-Type': 'application/json' };
+
+		fetch(url, {
+			method: 'PUT',
+			mode: 'cors',
+			headers: headers,
+			body: JSON.stringify(body)
+		})
+			.then((json) => json.json())
+			.then((response: GenericResponse<T>) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				console.error(`Failed to fetch ${endpoint}`);
+				console.error(error);
+				resolve(generateBrokenRequest(error));
+			});
+	});
+}
+
+export async function fetchProtectedPutRequest<T>(
+	token: string,
+	endpoint: string,
+	body: any,
+	headers?: HeadersInit
+): Promise<GenericResponse<T>> {
+	return new Promise<GenericResponse<T>>((resolve, reject) => {
+		let url: string = `${import.meta.env['VITE_API_URL']}/api/v1/${endpoint}`;
+
+		headers = {
+			...headers,
+			Authorization: `Bearer ${token}`,
+			'Content-Type': 'application/json'
+		};
+
+		fetch(url, {
+			method: 'PUT',
+			mode: 'cors',
+			headers: headers,
+			body: JSON.stringify(body)
+		})
+			.then((json) => json.json())
+			.then((response: GenericResponse<T>) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				console.error(`Failed to fetch ${endpoint}`);
+				console.error(error);
+				resolve(generateBrokenRequest(error));
+			});
+	});
+}
+
 export type FetchParams = {
 	[index: string]: any;
 };
@@ -102,39 +196,6 @@ export async function fetchGetRequest<T>(
 		fetch(url, {
 			mode: 'cors',
 			headers: headers
-		})
-			.then((json) => json.json())
-			.then((response: GenericResponse<T>) => {
-				resolve(response);
-			})
-			.catch((error) => {
-				console.error(`Failed to fetch ${endpoint}`);
-				console.error(error);
-				resolve(generateBrokenRequest(error));
-			});
-	});
-}
-
-export async function fetchProtectedPostRequest<T>(
-	token: string,
-	endpoint: string,
-	body: any,
-	headers?: HeadersInit
-): Promise<GenericResponse<T>> {
-	return new Promise<GenericResponse<T>>((resolve, reject) => {
-		let url: string = `${import.meta.env['VITE_API_URL']}/api/v1/${endpoint}`;
-
-		headers = {
-			...headers,
-			Authorization: `Bearer ${token}`,
-			'Content-Type': 'application/json'
-		};
-
-		fetch(url, {
-			method: 'POST',
-			mode: 'cors',
-			headers: headers,
-			body: JSON.stringify(body)
 		})
 			.then((json) => json.json())
 			.then((response: GenericResponse<T>) => {

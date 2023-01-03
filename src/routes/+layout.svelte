@@ -1,14 +1,21 @@
 <script lang="ts">
 	import '../app.css';
-	import { onMount } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	import { AuthorizerProvider } from '@authorizerdev/authorizer-svelte';
 	import '@authorizerdev/authorizer-svelte/styles/default.css';
 	import { goto } from '$app/navigation';
 	import Header from '$components/Header.svelte';
 	import Footer from '$components/Footer.svelte';
 	import { changeRoute } from '$utils';
+	import { session } from '$stores/session';
+	import type { AuthorizerState } from '@authorizerdev/authorizer-svelte/types';
 
 	let authUrl: string = '';
+	let state: AuthorizerState | undefined = undefined;
+
+	function setNewState(stateParam: AuthorizerState | undefined) {
+		state = stateParam;
+	}
 
 	onMount(() => {
 		authUrl = import.meta.env['VITE_AUTH_URL'] || '';
@@ -31,6 +38,7 @@
 				is_email_verification_enabled: true,
 				is_basic_authentication_enabled: true
 			}}
+			onStateChangeCallback={setNewState}
 		>
 			<Header drawer="menu-drawer" />
 			<slot />
@@ -59,12 +67,37 @@
 					on:click={() => changeRoute(goto, 'about_us')}>About us</button
 				>
 			</li>
-			<li>
-				<button
-					class="text-base lg:text-lg font-medium hover:underline hover:text-blue-500"
-					on:click={() => changeRoute(goto, 'auth')}>Login</button
-				>
-			</li>
+			{#if $session === undefined}
+				<li>
+					<button
+						class="text-base lg:text-lg font-medium hover:underline hover:text-blue-500"
+						on:click={() => changeRoute(goto, 'auth')}>Login</button
+					>
+				</li>
+			{:else}
+				<li>
+					<button
+						class="text-base lg:text-lg font-medium hover:underline hover:text-blue-500"
+						on:click={() => changeRoute(goto, 'profile')}
+					>
+						Profile
+					</button>
+				</li>
+				<li>
+					<button
+						class="text-base lg:text-lg font-medium hover:underline hover:text-blue-500"
+						on:click={() => {
+							if (state === undefined) {
+								return;
+							}
+							state.authorizerRef.logout();
+							$session = undefined;
+							changeRoute(goto, '');
+						}}
+						>Logout
+					</button>
+				</li>
+			{/if}
 		</ul>
 	</div>
 </div>

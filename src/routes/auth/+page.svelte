@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { Authorizer } from '@authorizerdev/authorizer-svelte';
+	import type { AuthToken } from '@authorizerdev/authorizer-js';
 	import { changeRoute } from '$utils';
 	import { goto } from '$app/navigation';
+	import { session } from '$stores/session';
 
 	function onSignup() {
 		changeRoute(goto, 'auth/verify_email');
 	}
 
-	function onLogin(response: any) {
-		console.log(response);
+	function onLogin(response: AuthToken) {
+		$session = response;
 		changeRoute(goto, '');
 	}
 </script>
