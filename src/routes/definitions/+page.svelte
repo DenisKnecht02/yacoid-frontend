@@ -7,14 +7,27 @@
 	import FilterBadge from '$components/FilterBadge.svelte';
 	import { AllCategories, type Category, type Definition } from '$types';
 	import { onMount } from 'svelte';
-	import { fetchPageCount } from '$api/definitions';
+	import {
+		fetchDefinitionById,
+		fetchDefinitionsPage,
+		fetchPageCount,
+		fetchSubmitDefinition
+	} from '$api/definitions';
 	import { changeRoute } from '$utils';
 
 	let pageCount: number = 0;
+	let definitions: Definition[] = [];
+	let filteredDefinitions: Definition[] = [];
+	let definitionId: string;
 
 	onMount(() => {
 		(async () => {
-			await getPageCount();
+			//await getPageCount();
+			//await getDefinitions();
+			//console.log(definitions);
+			//filteredDefinitions = [...definitions];
+			await submitDefinition();
+			console.log(definitionId);
 		})();
 	});
 
@@ -35,169 +48,168 @@
 		'Kasik, Nikolai'
 	];
 
-	let allDefinitions: Definition[] = [
-		{
-			id: 1,
-			category: 'artificial_intelligence',
-			author: 'Winston, P.H.',
-			publishingDate: new Date(1996),
-			content:
-				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 2,
-			category: 'artificial_intelligence',
-			author: 'Winston, P.H.',
-			publishingDate: new Date(1996),
-			content:
-				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 3,
-			category: 'artificial_intelligence',
-			author: 'Winston, P.H.',
-			publishingDate: new Date(1996),
-			content:
-				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 4,
-			category: 'artificial_intelligence',
-			author: 'Winston, P.H.',
-			publishingDate: new Date(1996),
-			content:
-				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 5,
-			category: 'artificial_intelligence',
-			author: 'Winston, P.H.',
-			publishingDate: new Date(1996),
-			content:
-				'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 6,
-			category: 'human_intelligence',
-			author: 'Quinston, Elizabeth',
-			publishingDate: new Date(1996),
-			content: 'This is a test definition.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 7,
-			category: 'human_intelligence',
-			author: 'Quinston, Elizabeth',
-			publishingDate: new Date(1996),
-			content: 'This is a test definition.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 8,
-			category: 'human_intelligence',
-			author: 'Quinston, Elizabeth',
-			publishingDate: new Date(1996),
-			content: 'This is a test definition.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 9,
-			category: 'human_intelligence',
-			author: 'Quinston, Elizabeth',
-			publishingDate: new Date(1996),
-			content: 'This is a test definition.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 10,
-			category: 'human_intelligence',
-			author: 'Quinston, Elizabeth',
-			publishingDate: new Date(1996),
-			content: 'This is a test definition.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 11,
-			category: 'machine_intelligence',
-			author: 'Freg, Thomas',
-			publishingDate: new Date(1996),
-			content: 'Machine Intelligence is currently undefined.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 12,
-			category: 'machine_intelligence',
-			author: 'Freg, Thomas',
-			publishingDate: new Date(1996),
-			content: 'Machine Intelligence is currently undefined.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 13,
-			category: 'machine_intelligence',
-			author: 'Freg, Thomas',
-			publishingDate: new Date(1996),
-			content: 'Machine Intelligence is currently undefined.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 14,
-			category: 'machine_intelligence',
-			author: 'Freg, Thomas',
-			publishingDate: new Date(1996),
-			content: 'Machine Intelligence is currently undefined.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		},
-		{
-			id: 15,
-			category: 'machine_intelligence',
-			author: 'Freg, Thomas',
-			publishingDate: new Date(1996),
-			content: 'Machine Intelligence is currently undefined.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21')
-		}
-	];
+	// let allDefinitions: Definition[] = [
+	// 	{
+	// 		id: 1,
+	// 		category: 'artificial_intelligence',
+	// 		author: 'Winston, P.H.',
+	// 		publishingDate: new Date(1996),
+	// 		content:
+	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 2,
+	// 		category: 'artificial_intelligence',
+	// 		author: 'Winston, P.H.',
+	// 		publishingDate: new Date(1996),
+	// 		content:
+	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 3,
+	// 		category: 'artificial_intelligence',
+	// 		author: 'Winston, P.H.',
+	// 		publishingDate: new Date(1996),
+	// 		content:
+	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 4,
+	// 		category: 'artificial_intelligence',
+	// 		author: 'Winston, P.H.',
+	// 		publishingDate: new Date(1996),
+	// 		content:
+	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 5,
+	// 		category: 'artificial_intelligence',
+	// 		author: 'Winston, P.H.',
+	// 		publishingDate: new Date(1996),
+	// 		content:
+	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 6,
+	// 		category: 'human_intelligence',
+	// 		author: 'Quinston, Elizabeth',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'This is a test definition.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 7,
+	// 		category: 'human_intelligence',
+	// 		author: 'Quinston, Elizabeth',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'This is a test definition.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 8,
+	// 		category: 'human_intelligence',
+	// 		author: 'Quinston, Elizabeth',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'This is a test definition.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 9,
+	// 		category: 'human_intelligence',
+	// 		author: 'Quinston, Elizabeth',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'This is a test definition.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 10,
+	// 		category: 'human_intelligence',
+	// 		author: 'Quinston, Elizabeth',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'This is a test definition.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 11,
+	// 		category: 'machine_intelligence',
+	// 		author: 'Freg, Thomas',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'Machine Intelligence is currently undefined.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 12,
+	// 		category: 'machine_intelligence',
+	// 		author: 'Freg, Thomas',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'Machine Intelligence is currently undefined.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 13,
+	// 		category: 'machine_intelligence',
+	// 		author: 'Freg, Thomas',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'Machine Intelligence is currently undefined.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 14,
+	// 		category: 'machine_intelligence',
+	// 		author: 'Freg, Thomas',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'Machine Intelligence is currently undefined.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	},
+	// 	{
+	// 		id: 15,
+	// 		category: 'machine_intelligence',
+	// 		author: 'Freg, Thomas',
+	// 		publishingDate: new Date(1996),
+	// 		content: 'Machine Intelligence is currently undefined.',
+	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedOn: new Date('2022-11-21')
+	// 	}
+	// ];
 
-	let filteredDefinitions: Definition[] = [...allDefinitions];
 	let selectedCategories: Category[] = [...AllCategories];
 	let selectedAuthors: string[] = [...allAuthors];
 
-	let filterIsSet: boolean = filteredDefinitions.length !== allDefinitions.length;
+	let filterIsSet: boolean = filteredDefinitions.length !== definitions.length;
 
 	function setCurrentActivePage(pageNumber: number) {
 		currentActivePage = pageNumber;
@@ -223,15 +235,15 @@
 	}
 
 	function filterDefinitions() {
-		filteredDefinitions = [...allDefinitions].filter(function (element) {
-			return (
-				element.content.includes(searchCriteria) &&
-				selectedCategories.includes(element.category as Category) &&
-				selectedAuthors.includes(element.author)
-			);
-		});
-		filterIsSet = filteredDefinitions.length !== allDefinitions.length;
-		calculateAmountOfPages();
+		// 	filteredDefinitions = [...definitions].filter(function (element) {
+		// 		return (
+		// 			element.content.includes(searchCriteria) &&
+		// 			selectedCategories.includes(element.category as Category) &&
+		// 			selectedAuthors.includes(element.author)
+		// 		);
+		// 	});
+		// 	filterIsSet = filteredDefinitions.length !== definitions.length;
+		// 	calculateAmountOfPages();
 	}
 
 	function removeSingleFilter(filterType: string, elementToRemove?: string) {
@@ -264,7 +276,7 @@
 		selectedAuthors = [...allAuthors];
 		searchCriteria = '';
 		filterIsSet = false;
-		filteredDefinitions = [...allDefinitions];
+		filteredDefinitions = [...definitions];
 	}
 
 	async function getPageCount() {
@@ -273,6 +285,29 @@
 			console.log(response.error);
 		} else {
 			pageCount = response.data!;
+		}
+	}
+
+	async function getDefinitions() {
+		const response = await fetchDefinitionsPage({ pageSize: 10, page: 1 });
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			definitions = response.data!;
+		}
+	}
+	async function submitDefinition() {
+		const response = await fetchSubmitDefinition({
+			title: 'New definition',
+			content: 'Test Content',
+			publishingDate: '2022-09-14T09:08:47.107Z',
+			category: 'artificial_intelligence',
+			sourceId: '63b2fb9fe075ef961a5f8a5b'
+		});
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			definitionId = response.data!;
 		}
 	}
 
@@ -372,11 +407,11 @@
 			{#each filteredDefinitions as definition}
 				{#if filteredDefinitions.indexOf(definition) >= startIndex && filteredDefinitions.indexOf(definition) <= endIndex}
 					<QuoteCard
-						author={definition.author}
+						author=""
 						category={definition.category}
 						content={definition.content}
-						publishingDate={definition.publishingDate}
-						source={definition.source}
+						publishingDate={new Date()}
+						source=""
 					/>
 				{/if}
 			{/each}

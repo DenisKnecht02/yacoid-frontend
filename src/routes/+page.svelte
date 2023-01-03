@@ -1,7 +1,5 @@
 <script lang="ts">
 	import QuoteCard from '../components/QuoteCard.svelte';
-	import Header from '../components/Header.svelte';
-	import Footer from '../components/Footer.svelte';
 	import StatisticCard from '../components/StatisticCard.svelte';
 	import { changeRoute } from '$utils';
 	import { goto } from '$app/navigation';
@@ -64,8 +62,8 @@
 					<QuoteCard
 						category={definition.category}
 						content={definition.content}
-						author={definition.author}
-						publishingDate={definition.publishingDate}
+						author=""
+						publishingDate={new Date()}
 					/>
 				{/each}
 			</div>

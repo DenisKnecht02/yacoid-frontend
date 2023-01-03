@@ -41,7 +41,7 @@ export async function fetchPostRequest<T>(
 }
 
 export type FetchParams = {
-	[index: string]: string | number | undefined;
+	[index: string]: any;
 };
 export async function fetchProtectedGetRequest<T>(
 	token: string,

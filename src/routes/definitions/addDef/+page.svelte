@@ -9,7 +9,7 @@
 		type PersonAuthor,
 		type Source,
 		type SourceType,
-		type WebSourceProps
+		type WebProperties
 	} from '$types';
 
 	let suggestedAuthors: Author[] = [

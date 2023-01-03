@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from '$components/Icon.svelte';
 	import { goto } from '$app/navigation';
-	import { Genders, type Definition, type Gender } from '$types';
+	import { Genders, type Definition, type Gender, type UserDefinition } from '$types';
 	import BasicModal from '$components/BasicModal.svelte';
 
 	let currentNickname: string = 'alecpope';
@@ -54,48 +54,60 @@
 	let allPasswordCriteriaMet: boolean = false;
 	let showPassword: boolean = false;
 
-	let submittedDefinitions: Definition[] = [
+	let submittedDefinitions: UserDefinition[] = [
 		{
-			id: 7,
+			id: '1',
 			category: 'human_intelligence',
-			author: 'Quinston, Elizabeth',
-			publishingDate: new Date(1996),
 			content:
 				'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1991.',
+			source: {
+				id: '1',
+				authors: [
+					{
+						id: '1',
+						firstName: 'Bertrand',
+						lastName: 'Dieter',
+						type: 'person',
+						slugId: 'bertrand-dieter-1',
+						submittedBy: 'Dr. Bert',
+						submittedDate: new Date('2023-01-01')
+					}
+				],
+				type: 'book',
+				submittedBy: 'Dr. Bert',
+				submittedDate: new Date('2023-01-01'),
+				publishingDate: new Date('2021-12-10')
+			},
 			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21'),
-			status: {
-				status: 'approved'
-			}
+			submittedDate: new Date('2022-11-21'),
+			rejectionLog: []
 		},
 		{
-			id: 8,
-			category: 'human_intelligence',
-			author: 'Winston, P.H.',
-			publishingDate: new Date(1996),
-			content:
-				'Human Intelligence is a subfield of intelligence that deals with understanding how human think.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1996.',
-			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-21'),
-			status: {
-				status: 'declined',
-				declinementMessage: "The source doesn't seem to be valid, please update it."
-			}
-		},
-		{
-			id: 9,
+			id: '2',
 			category: 'artificial_intelligence',
-			author: 'George, Fred',
-			publishingDate: new Date(1996),
-			content: 'This is a test definition.',
-			source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1994.',
+			content:
+				'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
+			source: {
+				id: '2',
+				authors: [
+					{
+						id: '1',
+						firstName: 'Bertrand',
+						lastName: 'Dieter',
+						type: 'person',
+						slugId: 'bertrand-dieter-1',
+						submittedBy: 'Dr. Bert',
+						submittedDate: new Date('2023-01-01')
+					}
+				],
+				type: 'web',
+				submittedBy: 'Dr. Bert',
+				submittedDate: new Date('2023-01-01'),
+				publishingDate: new Date('2021-12-10')
+			},
 			submittedBy: 'Dr. Bert',
-			submittedOn: new Date('2022-11-20'),
-			status: {
-				status: 'pending'
-			}
+			submittedDate: new Date('2022-11-21'),
+			rejectionLog: []
 		}
 	];
 
@@ -742,9 +754,9 @@
 											{submittedDefinition.content.length >= 50 ? '...' : ''}
 										</p></td
 									>
-									<td>{submittedDefinition.submittedOn.toLocaleDateString()}</td>
+									<td>{submittedDefinition.submittedDate.toLocaleDateString()}</td>
 									<td>
-										<p
+										<!-- <p
 											class={`${
 												submittedDefinition.status?.status === 'approved' && 'text-success'
 											} ${submittedDefinition.status?.status === 'pending' && 'text-warning'} ${
@@ -752,7 +764,8 @@
 											}`}
 										>
 											{submittedDefinition.status?.status}
-										</p>
+										</p> -->
+										Status
 									</td>
 								</tr>
 							{/each}
