@@ -12,6 +12,7 @@
 	}
 
 	function onLogin(response: AuthToken) {
+		console.log(response);
 		$session = response;
 		changeRoute(goto, '');
 	}

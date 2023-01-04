@@ -5,12 +5,16 @@
 	import { goto } from '$app/navigation';
 	import Icon from '$components/Icon.svelte';
 	import FilterBadge from '$components/FilterBadge.svelte';
-	import { AllCategories, type Category, type Definition } from '$types';
+	import { Categories, type Category, type Definition } from '$types';
 	import { onMount } from 'svelte';
 	import {
+	fetchApproveDefinition,
+	fetchChangeDefinition,
 		fetchDefinitionById,
 		fetchDefinitionsPage,
+		fetchDeleteDefinition,
 		fetchPageCount,
+		fetchRejectDefinition,
 		fetchSubmitDefinition
 	} from '$api/definitions';
 	import { changeRoute } from '$utils';
@@ -24,8 +28,12 @@
 	onMount(() => {
 		(async () => {
 			//await getPageCount();
-			await submitDefinition();
-			await getDefinitions();
+			//await submitDefinition();
+			//await getDefinitions();
+			//await rejectDefinition();
+			//await changeDefinition();
+			//await approveDefinition();
+			await deleteDefinition();
 			//console.log(definitions);
 			//filteredDefinitions = [...definitions];
 			//console.log(definitionId);
@@ -49,7 +57,7 @@
 		'Kasik, Nikolai'
 	];
 
-	// let allDefinitions: Definition[] = [
+	let allDefinitions: Definition[] = [
 	// 	{
 	// 		id: 1,
 	// 		category: 'artificial_intelligence',
@@ -205,9 +213,9 @@
 	// 		submittedBy: 'Dr. Bert',
 	// 		submittedOn: new Date('2022-11-21')
 	// 	}
-	// ];
+	];
 
-	let selectedCategories: Category[] = [...AllCategories];
+	let selectedCategories: Category[] = [...Categories];
 	let selectedAuthors: string[] = [...allAuthors];
 
 	let filterIsSet: boolean = filteredDefinitions.length !== definitions.length;
@@ -250,7 +258,7 @@
 	function removeSingleFilter(filterType: string, elementToRemove?: string) {
 		if (filterType === 'category') {
 			if (selectedCategories.length === 1) {
-				selectedCategories = [...AllCategories];
+				selectedCategories = [...Categories];
 			} else {
 				const index = selectedCategories.indexOf(elementToRemove! as Category);
 				if (index !== -1) {
@@ -273,7 +281,7 @@
 	}
 
 	function removeAllFilters() {
-		selectedCategories = [...AllCategories];
+		selectedCategories = [...Categories];
 		selectedAuthors = [...allAuthors];
 		searchCriteria = '';
 		filterIsSet = false;
@@ -297,22 +305,82 @@
 			definitions = response.data!;
 		}
 	}
+	
 	async function submitDefinition() {
 		if ($session === undefined) {
 			console.log('Session is undefined.');
 			return;
 		}
 		const response = await fetchSubmitDefinition($session.id_token, {
-			title: 'Test',
-			content: 'This is a test.',
+			title: 'Test from frontend 2',
+			content: 'This is a test from the frontend 2.',
 			publishingDate: '2022-09-14T09:08:47.107Z',
 			category: 'artificial_intelligence',
-			sourceId: '63b2fb9fe075ef961a5f8a5b'
+			sourceId: '63b54a203e09e73fea2c8c4b'
 		});
 		if (response.error) {
 			console.log(response.error);
 		} else {
 			definitionId = response.data!;
+		}
+	}
+
+	async function rejectDefinition() {
+		if($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchRejectDefinition($session.id_token, {
+			id: "63b5529e3e09e73fea2c8c4f",
+			content: "wrong spelling"
+		})
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.message);
+		}
+	}
+
+	async function changeDefinition() {
+		if($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchChangeDefinition($session.id_token, {
+			id: "63b5529e3e09e73fea2c8c4f",
+			content: "I change it to this is a good quote.",
+			category: 'artificial_intelligence'
+		})
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.message);
+		}
+	}
+
+	async function approveDefinition() {
+		if($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchApproveDefinition($session.id_token, "63b557ce3e09e73fea2c8c54")
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.message);
+		}
+	}
+
+	async function deleteDefinition() {
+		if($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchDeleteDefinition($session.id_token, "63b557ce3e09e73fea2c8c54")
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.message);
 		}
 	}
 
@@ -354,7 +422,7 @@
 						</li>
 					</ul>
 					<FilteringCategoryModal
-						allCategories={AllCategories}
+						allCategories={Categories}
 						{selectedCategories}
 						modalName="category-modal"
 						{setSelectedCategories}
@@ -385,7 +453,7 @@
 
 		{#if filterIsSet}
 			<div class="flex gap-4 py-6 overflow-x-auto">
-				{#if selectedCategories.length !== AllCategories.length}
+				{#if selectedCategories.length !== Categories.length}
 					{#each selectedCategories as category}
 						<FilterBadge
 							filterType="category"

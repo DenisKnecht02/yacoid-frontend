@@ -10,7 +10,10 @@ import {
 import {
 	fetchGetRequest,
 	fetchPostRequest,
+	fetchProtectedDeleteRequest,
+	fetchProtectedGetRequest,
 	fetchProtectedPostRequest,
+	fetchProtectedPutRequest,
 	type FetchParams,
 	type GenericResponse
 } from './api';
@@ -184,3 +187,49 @@ export async function fetchRejectDefinition(
 		data: response.data
 	};
 }
+
+export type ChangeDefinitionRequest = {
+	id: string;
+	title?: string;
+	content?: string;
+	sourceId?: string;
+	category?: Category;
+}
+
+export async function fetchChangeDefinition(
+	token: string,
+	request: ChangeDefinitionRequest
+): Promise<GenericResponse<string>> {
+	const response = await fetchProtectedPutRequest<string>(token, 'definitions', request);
+
+	return {
+		message: response.message,
+		error: response.error,
+		data: response.data
+	};
+}
+
+export async function fetchApproveDefinition(token: string, id: string): Promise<GenericResponse<string>> {
+	const response = await fetchProtectedGetRequest<string>(token, 'definitions/approve', {
+		id: id
+	});
+
+	return {
+		message: response.message,
+		error: response.error,
+		data: response.data
+	};
+}
+
+export async function fetchDeleteDefinition(token: string, id: string): Promise<GenericResponse<string>> {
+	const response = await fetchProtectedDeleteRequest<string>(token, 'definitions', {
+		id: id
+	});
+
+	return {
+		message: response.message,
+		error: response.error,
+		data: response.data
+	};
+}
+

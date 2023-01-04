@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from '$components/Icon.svelte';
 	import {
-		AllCategories,
+		Categories,
 		CategoryLabel,
 		type Author,
 		type AuthorType,
@@ -488,7 +488,7 @@
 						<span class="font-semibold text-xl">Category</span>
 					</label>
 					<select class="select w-full border border-gray-300">
-						{#each AllCategories as category}
+						{#each Categories as category}
 							<option>{CategoryLabel[category]}</option>
 						{/each}
 					</select>

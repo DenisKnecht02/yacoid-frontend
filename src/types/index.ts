@@ -239,8 +239,6 @@ export type Params = {
 	[index: string]: string | undefined;
 };
 
-export type Gender = 'male' | 'female' | 'diverse';
-export const Genders: Gender[] = ['male', 'female', 'diverse'];
 
 export type Category =
 	| 'human_intelligence'
@@ -248,7 +246,7 @@ export type Category =
 	| 'machine_intelligence'
 	| 'plant_intelligence'
 	| 'alien_intelligence';
-export const AllCategories: Category[] = [
+export const Categories: Category[] = [
 	'human_intelligence',
 	'artificial_intelligence',
 	'machine_intelligence',

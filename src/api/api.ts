@@ -134,6 +134,80 @@ export async function fetchProtectedPutRequest<T>(
 	});
 }
 
+export async function fetchProtectedDeleteRequest<T>(
+	token: string,
+	endpoint: string,
+	params?: FetchParams
+): Promise<GenericResponse<T>> {
+	return new Promise<GenericResponse<T>>((resolve, reject) => {
+		let url: string = `${import.meta.env['VITE_API_URL']}/api/v1/${endpoint}`;
+
+		if (params) {
+			let keys = Object.keys(params);
+			for (let i = 0; i < keys.length; i++) {
+				if (i === 0) url += `?${keys[i]}=${params[keys[i]]}`;
+				else url += `&${keys[i]}=${params[keys[i]]}`;
+			}
+		}
+
+		const headers = {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		};
+
+		fetch(url, {
+			headers: headers,
+			mode: 'cors',
+			method: 'DELETE',
+		})
+			.then((json) => json.json())
+			.then((response: GenericResponse<T>) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				console.error(`Failed to fetch ${endpoint}`);
+				console.error(error);
+				resolve(generateBrokenRequest(error));
+			});
+	});
+}
+
+export async function fetchDeleteRequest<T>(
+	endpoint: string,
+	params?: FetchParams
+): Promise<GenericResponse<T>> {
+	return new Promise<GenericResponse<T>>((resolve, reject) => {
+		let url: string = `${import.meta.env['VITE_API_URL']}/api/v1/${endpoint}`;
+
+		if (params) {
+			let keys = Object.keys(params);
+			for (let i = 0; i < keys.length; i++) {
+				if (i === 0) url += `?${keys[i]}=${params[keys[i]]}`;
+				else url += `&${keys[i]}=${params[keys[i]]}`;
+			}
+		}
+
+		const headers = {
+			'Content-Type': 'application/json'
+		};
+
+		fetch(url, {
+			mode: 'cors',
+			headers: headers,
+			method: 'DELETE',
+		})
+			.then((json) => json.json())
+			.then((response: GenericResponse<T>) => {
+				resolve(response);
+			})
+			.catch((error) => {
+				console.error(`Failed to fetch ${endpoint}`);
+				console.error(error);
+				resolve(generateBrokenRequest(error));
+			});
+	});
+}
+
 export type FetchParams = {
 	[index: string]: any;
 };
