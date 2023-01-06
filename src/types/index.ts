@@ -12,33 +12,105 @@ export function convertArray<U, V>(array: U[], converter: (item: U) => V): V[] {
 	return convertedArray;
 }
 
-export type AuthorType = 'person' | 'organization';
-
-export type FetchedAuthor = {
-	id: string;
-	slugId: string;
-	submittedBy: string;
-	submittedDate: string;
-	type: AuthorType;
-	personProperties: PersonAuthorProps;
-	organizationProperties: OrganizationAuthorProps;
-};
-
 export type FetchedSource = {
 	id: string;
 	submittedBy: string;
+	submittedByName: string;
 	submittedDate: string;
-	publishingDate: string;
 	type: SourceType;
 	authors: FetchedAuthor[];
-	bookProperties: BookProperties;
-	journalProperties: JournalProperties;
-	webProperties: WebProperties;
+	bookProperties: FetchedBookProperties;
+	journalProperties: FetchedJournalProperties;
+	webProperties: FetchedWebProperties;
 };
+
+export type SourceType = 'book' | 'journal' | 'web';
+
+export type Source = {
+	id: string;
+	submittedBy: string;
+	submittedByName: string;
+	submittedDate: Date;
+	type: SourceType;
+	authors: Author[];
+};
+
+export type FetchedBookProperties = {
+	title: string;
+	pagesFrom?: number;
+	pagesTo?: number;
+	publicationDate?: string;
+	publicationPlace?: string;
+	edition?: string;
+	publisher?: string;
+	isbn?: string;
+	ean?: string;
+	doi?: string;
+};
+
+export type FetchedJournalProperties = {
+	title: string;
+	journalName: string;
+	pagesFrom?: number;
+	pagesTo?: number;
+	publicationDate?: string;
+	publicationPlace?: string;
+	edition?: string;
+	publisher?: string;
+	doi?: string;
+};
+
+export type FetchedWebProperties = {
+	articleName: string;
+	url: string;
+	websiteName: string;
+	accessDate: string;
+	publicationDate?: string;
+};
+
+export type BookSource = Source & BookProperties;
+
+export type BookProperties = {
+	title: string;
+	pagesFrom?: number;
+	pagesTo?: number;
+	publicationDate?: Date;
+	publicationPlace?: string;
+	edition?: string;
+	publisher?: string;
+	isbn?: string;
+	ean?: string;
+	doi?: string;
+};
+
+export type JournalSource = Source & JournalProperties;
+
+export type JournalProperties = {
+	title: string;
+	journalName: string;
+	pagesFrom?: number;
+	pagesTo?: number;
+	publicationDate?: Date;
+	publicationPlace?: string;
+	edition?: string;
+	publisher?: string;
+	doi?: string;
+};
+
+export type WebProperties = {
+	articleName: string;
+	url: string;
+	websiteName: string;
+	accessDate: Date;
+	publicationDate?: Date;
+};
+
+export type WebSource = Source & WebProperties;
 
 export type FetchedRejection = {
 	id: string;
 	rejectedBy: string;
+	rejectedByName: string;
 	rejectedDate: string;
 	content: string;
 };
@@ -46,6 +118,7 @@ export type FetchedRejection = {
 export type Rejection = {
 	id: string;
 	rejectedBy: string;
+	rejectedByName: string;
 	rejectedDate: Date;
 	content: string;
 };
@@ -56,17 +129,8 @@ export type FetchedDefinition = {
 	content: string;
 	source: FetchedSource;
 	submittedBy: string;
+	submittedByName: string;
 	submittedDate: string;
-};
-
-export type FetchedUserDefinition = {
-	id: string;
-	category: Category;
-	content: string;
-	source: FetchedSource;
-	submittedBy: string;
-	submittedDate: string;
-	rejectionLog: FetchedRejection[];
 };
 
 export type Definition = {
@@ -75,7 +139,20 @@ export type Definition = {
 	content: string;
 	source: Source;
 	submittedBy: string;
+	submittedByName: string;
 	submittedDate: Date;
+};
+
+export type FetchedUserDefinition = {
+	id: string;
+	category: Category;
+	content: string;
+	source: FetchedSource;
+	submittedBy: string;
+	submittedByName: string;
+	submittedDate: string;
+	rejectionLog: FetchedRejection[];
+	status: DefinitionStatus;
 };
 
 export type UserDefinition = {
@@ -84,9 +161,63 @@ export type UserDefinition = {
 	content: string;
 	source: Source;
 	submittedBy: string;
+	submittedByName: string;
 	submittedDate: Date;
 	rejectionLog: Rejection[];
+	status: DefinitionStatus;
 };
+
+export type AuthorType = 'person' | 'organization';
+
+export type FetchedAuthor = {
+	id: string;
+	slugId: string;
+	submittedBy: string;
+	submittedByName: string;
+	submittedDate: string;
+	type: AuthorType;
+	personProperties: PersonAuthorProps;
+	organizationProperties: OrganizationAuthorProps;
+};
+
+export type Author = AuthorProps & (PersonAuthorProps | OrganizationAuthorProps);
+
+export type AuthorProps = {
+	id: string;
+	slugId: string; // more readable friendly id like "max-mustermann-8361"
+	submittedBy: string;
+	submittedByName: string;
+	submittedDate: Date;
+	type: AuthorType;
+};
+
+export function getDisplayName(author: Author): string {
+	let displayName: string;
+
+	if (author.type === 'person') {
+		let personAuthor: PersonAuthor = author as PersonAuthor;
+		displayName = `${personAuthor.lastName}, ${personAuthor.firstName}`;
+	} else if (author.type === 'organization') {
+		let organizationAuthor: OrganizationAuthor = author as OrganizationAuthor;
+		displayName = organizationAuthor.organizationName;
+	} else {
+		displayName = 'Author type is invalid.';
+	}
+
+	return displayName;
+}
+
+export type PersonAuthorProps = {
+	firstName: string;
+	lastName: string;
+};
+
+export type OrganizationAuthorProps = {
+	organizationName: string;
+};
+
+export type PersonAuthor = AuthorProps & PersonAuthorProps;
+export type OrganizationAuthor = AuthorProps & OrganizationAuthorProps;
 
 export function convertFetchedDefinitionToDefinition(
 	fetchedDefinition: FetchedDefinition
@@ -127,18 +258,60 @@ export function convertFetchedSourceToSource(fetchedSource: FetchedSource): Sour
 	);
 	if (fetchedSource.type === 'book') {
 		source.bookProperties = undefined;
-		source = { ...source, ...fetchedSource.bookProperties };
+		let sourceBookProperties: BookProperties = convertFetchedBookPropertiesToBookProperties(
+			fetchedSource.bookProperties
+		);
+		source = { ...source, ...sourceBookProperties };
 		return source as BookSource;
 	} else if (fetchedSource.type === 'journal') {
 		source.journalProperties = undefined;
-		source = { ...source, ...fetchedSource.journalProperties };
+		let sourceJournalProperties: JournalProperties =
+			convertFetchedJournalPropertiesToJournalProperties(fetchedSource.journalProperties);
+		source = { ...source, ...sourceJournalProperties };
 		return source as JournalSource;
 	} else if (fetchedSource.type === 'web') {
 		source.webProperties = undefined;
-		source = { ...source, ...fetchedSource.webProperties };
+		let sourceWebProperties: WebProperties = convertFetchedWebPropertiesToWebProperties(
+			fetchedSource.webProperties
+		);
+		source = { ...source, ...sourceWebProperties };
 		return source as WebSource;
 	}
 	throw `Invalid source type ${fetchedSource.type} of source ${fetchedSource.id}`;
+}
+
+export function convertFetchedBookPropertiesToBookProperties(
+	fetchedBookProperties: FetchedBookProperties
+): BookProperties {
+	return {
+		...fetchedBookProperties,
+		publicationDate: fetchedBookProperties.publicationDate
+			? new Date(fetchedBookProperties.publicationDate)
+			: undefined
+	};
+}
+
+export function convertFetchedJournalPropertiesToJournalProperties(
+	fetchedJournalProperties: FetchedJournalProperties
+): JournalProperties {
+	return {
+		...fetchedJournalProperties,
+		publicationDate: fetchedJournalProperties.publicationDate
+			? new Date(fetchedJournalProperties.publicationDate)
+			: undefined
+	};
+}
+
+export function convertFetchedWebPropertiesToWebProperties(
+	fetchedWebProperties: FetchedWebProperties
+): WebProperties {
+	return {
+		...fetchedWebProperties,
+		accessDate: new Date(fetchedWebProperties.accessDate),
+		publicationDate: fetchedWebProperties.publicationDate
+			? new Date(fetchedWebProperties.publicationDate)
+			: undefined
+	};
 }
 
 export function convertFetchedAuthorToAuthor(fetchedAuthor: FetchedAuthor): Author {
@@ -158,87 +331,11 @@ export function convertFetchedAuthorToAuthor(fetchedAuthor: FetchedAuthor): Auth
 	throw `Invalid author type ${fetchedAuthor.type} of author ${fetchedAuthor.id}`;
 }
 
-export type DefinitionStatus = {
-	status: 'approved' | 'pending' | 'declined';
-	declinementMessage?: string;
-};
-
-export type AuthorProps = {
-	id: string;
-	slugId: string; // more readable friendly id like "max-mustermann-8361"
-	submittedBy: string;
-	submittedDate: Date;
-	type: AuthorType;
-};
-
-export type PersonAuthorProps = {
-	firstName: string;
-	lastName: string;
-};
-
-export type OrganizationAuthorProps = {
-	organizationName: string;
-};
-
-export type Author = AuthorProps & (PersonAuthorProps | OrganizationAuthorProps);
-
-export type PersonAuthor = AuthorProps & PersonAuthorProps;
-export type OrganizationAuthor = AuthorProps & OrganizationAuthorProps;
-
-export type SourceType = 'book' | 'journal' | 'web';
-
-export type Source = {
-	id: string;
-	submittedBy: string;
-	submittedDate: Date;
-	publishingDate: Date;
-	type: SourceType;
-	authors: Author[];
-};
-
-export type BookSource = Source & BookProperties;
-
-export type BookProperties = {
-	title: string;
-	pagesFrom: number;
-	pagesTo: number;
-	publicationDate: Date;
-	publicationPlace?: string;
-	edition?: string;
-	publisher?: string;
-	isbn?: string;
-	ean?: string;
-	doi?: string;
-};
-
-export type JournalSource = Source & JournalProperties;
-
-export type JournalProperties = {
-	title: string;
-	articleName: string;
-	pagesFrom: number;
-	pagesTo: number;
-	publicationDate: Date;
-	publicationPlace?: string;
-	edition?: string;
-	publisher?: string;
-	doi?: string;
-};
-
-export type WebProperties = {
-	articleName: string;
-	url: string;
-	websiteName: string;
-	accessDate: Date;
-	publicationDate?: Date;
-};
-
-export type WebSource = Source & WebProperties;
+export type DefinitionStatus = 'approved' | 'pending' | 'declined';
 
 export type Params = {
 	[index: string]: string | undefined;
 };
-
 
 export type Category =
 	| 'human_intelligence'

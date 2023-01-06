@@ -8,8 +8,8 @@
 	import { Categories, type Category, type Definition } from '$types';
 	import { onMount } from 'svelte';
 	import {
-	fetchApproveDefinition,
-	fetchChangeDefinition,
+		fetchApproveDefinition,
+		fetchChangeDefinition,
 		fetchDefinitionById,
 		fetchDefinitionsPage,
 		fetchDeleteDefinition,
@@ -19,6 +19,7 @@
 	} from '$api/definitions';
 	import { changeRoute } from '$utils';
 	import { session } from '$stores/session';
+	import { fetchDeleteSource } from '$api/sources';
 
 	let pageCount: number = 0;
 	let definitions: Definition[] = [];
@@ -29,14 +30,15 @@
 		(async () => {
 			//await getPageCount();
 			//await submitDefinition();
-			//await getDefinitions();
+			await getDefinitions();
 			//await rejectDefinition();
 			//await changeDefinition();
 			//await approveDefinition();
-			await deleteDefinition();
+			//await deleteDefinition();
 			//console.log(definitions);
-			//filteredDefinitions = [...definitions];
+			filteredDefinitions = [...definitions];
 			//console.log(definitionId);
+			await deleteSource();
 		})();
 	});
 
@@ -55,164 +57,6 @@
 		'Freg, Thomas',
 		'Schmindt, Lucas',
 		'Kasik, Nikolai'
-	];
-
-	let allDefinitions: Definition[] = [
-	// 	{
-	// 		id: 1,
-	// 		category: 'artificial_intelligence',
-	// 		author: 'Winston, P.H.',
-	// 		publishingDate: new Date(1996),
-	// 		content:
-	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 2,
-	// 		category: 'artificial_intelligence',
-	// 		author: 'Winston, P.H.',
-	// 		publishingDate: new Date(1996),
-	// 		content:
-	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 3,
-	// 		category: 'artificial_intelligence',
-	// 		author: 'Winston, P.H.',
-	// 		publishingDate: new Date(1996),
-	// 		content:
-	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 4,
-	// 		category: 'artificial_intelligence',
-	// 		author: 'Winston, P.H.',
-	// 		publishingDate: new Date(1996),
-	// 		content:
-	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 5,
-	// 		category: 'artificial_intelligence',
-	// 		author: 'Winston, P.H.',
-	// 		publishingDate: new Date(1996),
-	// 		content:
-	// 			'Artificial Intelligence is […] the study of the computations that make it possible to perceive, reason, and act.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 6,
-	// 		category: 'human_intelligence',
-	// 		author: 'Quinston, Elizabeth',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'This is a test definition.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 7,
-	// 		category: 'human_intelligence',
-	// 		author: 'Quinston, Elizabeth',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'This is a test definition.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 8,
-	// 		category: 'human_intelligence',
-	// 		author: 'Quinston, Elizabeth',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'This is a test definition.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 9,
-	// 		category: 'human_intelligence',
-	// 		author: 'Quinston, Elizabeth',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'This is a test definition.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 10,
-	// 		category: 'human_intelligence',
-	// 		author: 'Quinston, Elizabeth',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'This is a test definition.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 11,
-	// 		category: 'machine_intelligence',
-	// 		author: 'Freg, Thomas',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'Machine Intelligence is currently undefined.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 12,
-	// 		category: 'machine_intelligence',
-	// 		author: 'Freg, Thomas',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'Machine Intelligence is currently undefined.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 13,
-	// 		category: 'machine_intelligence',
-	// 		author: 'Freg, Thomas',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'Machine Intelligence is currently undefined.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 14,
-	// 		category: 'machine_intelligence',
-	// 		author: 'Freg, Thomas',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'Machine Intelligence is currently undefined.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	},
-	// 	{
-	// 		id: 15,
-	// 		category: 'machine_intelligence',
-	// 		author: 'Freg, Thomas',
-	// 		publishingDate: new Date(1996),
-	// 		content: 'Machine Intelligence is currently undefined.',
-	// 		source: 'Artificial Intelligence. Third Edition, Addison-Wesley Publishing Company, 1992.',
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedOn: new Date('2022-11-21')
-	// 	}
 	];
 
 	let selectedCategories: Category[] = [...Categories];
@@ -298,14 +142,18 @@
 	}
 
 	async function getDefinitions() {
-		const response = await fetchDefinitionsPage({ pageSize: 10, page: 1 });
+		const response = await fetchDefinitionsPage({
+			pageSize: 10,
+			page: 1,
+			filter: { approved: true }
+		});
 		if (response.error) {
 			console.log(response.error);
 		} else {
 			definitions = response.data!;
 		}
 	}
-	
+
 	async function submitDefinition() {
 		if ($session === undefined) {
 			console.log('Session is undefined.');
@@ -326,14 +174,14 @@
 	}
 
 	async function rejectDefinition() {
-		if($session === undefined) {
+		if ($session === undefined) {
 			console.log('Session is undefined');
 			return;
 		}
 		const response = await fetchRejectDefinition($session.id_token, {
-			id: "63b5529e3e09e73fea2c8c4f",
-			content: "wrong spelling"
-		})
+			id: '63b5529e3e09e73fea2c8c4f',
+			content: 'wrong spelling'
+		});
 		if (response.error) {
 			console.log(response.error);
 		} else {
@@ -342,15 +190,15 @@
 	}
 
 	async function changeDefinition() {
-		if($session === undefined) {
+		if ($session === undefined) {
 			console.log('Session is undefined');
 			return;
 		}
 		const response = await fetchChangeDefinition($session.id_token, {
-			id: "63b5529e3e09e73fea2c8c4f",
-			content: "I change it to this is a good quote.",
+			id: '63b5529e3e09e73fea2c8c4f',
+			content: 'I change it to this is a good quote.',
 			category: 'artificial_intelligence'
-		})
+		});
 		if (response.error) {
 			console.log(response.error);
 		} else {
@@ -359,11 +207,11 @@
 	}
 
 	async function approveDefinition() {
-		if($session === undefined) {
+		if ($session === undefined) {
 			console.log('Session is undefined');
 			return;
 		}
-		const response = await fetchApproveDefinition($session.id_token, "63b557ce3e09e73fea2c8c54")
+		const response = await fetchApproveDefinition($session.id_token, '63b557ce3e09e73fea2c8c54');
 		if (response.error) {
 			console.log(response.error);
 		} else {
@@ -372,11 +220,24 @@
 	}
 
 	async function deleteDefinition() {
-		if($session === undefined) {
+		if ($session === undefined) {
 			console.log('Session is undefined');
 			return;
 		}
-		const response = await fetchDeleteDefinition($session.id_token, "63b557ce3e09e73fea2c8c54")
+		const response = await fetchDeleteDefinition($session.id_token, '63b557ce3e09e73fea2c8c54');
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.message);
+		}
+	}
+
+	async function deleteSource() {
+		if ($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchDeleteSource($session.id_token, '63b81844aa6675ea76e805bc');
 		if (response.error) {
 			console.log(response.error);
 		} else {

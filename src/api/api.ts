@@ -158,7 +158,7 @@ export async function fetchProtectedDeleteRequest<T>(
 		fetch(url, {
 			headers: headers,
 			mode: 'cors',
-			method: 'DELETE',
+			method: 'DELETE'
 		})
 			.then((json) => json.json())
 			.then((response: GenericResponse<T>) => {
@@ -194,7 +194,7 @@ export async function fetchDeleteRequest<T>(
 		fetch(url, {
 			mode: 'cors',
 			headers: headers,
-			method: 'DELETE',
+			method: 'DELETE'
 		})
 			.then((json) => json.json())
 			.then((response: GenericResponse<T>) => {

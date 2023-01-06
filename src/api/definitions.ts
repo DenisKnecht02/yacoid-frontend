@@ -18,10 +18,6 @@ import {
 	type GenericResponse
 } from './api';
 
-type GetFetchedDefinitionsResponse = {
-	definitions: FetchedDefinition[];
-};
-
 export type GetDefinitionsResponse = {
 	definitions: Definition[];
 };
@@ -73,6 +69,7 @@ export type GetPageCountResponse = {
 
 export type DefinitionFilter = {
 	content?: string;
+	approved?: boolean;
 	categories?: Category[];
 	authorIds?: string[];
 	publishingYears?: number[];
@@ -93,6 +90,10 @@ export type GetPageRequest = {
 	pageSize: number;
 	page: number;
 	filter?: DefinitionFilter;
+};
+
+type GetFetchedDefinitionsResponse = {
+	definitions: FetchedDefinition[];
 };
 
 export async function fetchDefinitionsPage(
@@ -194,7 +195,7 @@ export type ChangeDefinitionRequest = {
 	content?: string;
 	sourceId?: string;
 	category?: Category;
-}
+};
 
 export async function fetchChangeDefinition(
 	token: string,
@@ -209,7 +210,10 @@ export async function fetchChangeDefinition(
 	};
 }
 
-export async function fetchApproveDefinition(token: string, id: string): Promise<GenericResponse<string>> {
+export async function fetchApproveDefinition(
+	token: string,
+	id: string
+): Promise<GenericResponse<string>> {
 	const response = await fetchProtectedGetRequest<string>(token, 'definitions/approve', {
 		id: id
 	});
@@ -221,7 +225,10 @@ export async function fetchApproveDefinition(token: string, id: string): Promise
 	};
 }
 
-export async function fetchDeleteDefinition(token: string, id: string): Promise<GenericResponse<string>> {
+export async function fetchDeleteDefinition(
+	token: string,
+	id: string
+): Promise<GenericResponse<string>> {
 	const response = await fetchProtectedDeleteRequest<string>(token, 'definitions', {
 		id: id
 	});
@@ -232,4 +239,3 @@ export async function fetchDeleteDefinition(token: string, id: string): Promise<
 		data: response.data
 	};
 }
-
