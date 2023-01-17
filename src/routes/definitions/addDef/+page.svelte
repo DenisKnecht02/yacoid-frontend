@@ -19,6 +19,7 @@
 			submittedBy: 'user',
 			submittedDate: new Date('2022-11-04'),
 			type: 'person',
+			submittedByName: "Phillip",
 			firstName: 'Phillip Hans',
 			lastName: 'Winston'
 		},
@@ -28,6 +29,7 @@
 			submittedBy: 'user',
 			submittedDate: new Date('2022-11-05'),
 			type: 'person',
+			submittedByName: "Phillip",
 			firstName: 'Elizabeth',
 			lastName: 'Quinston'
 		},
@@ -37,6 +39,7 @@
 			submittedBy: 'user',
 			submittedDate: new Date('2022-11-08'),
 			type: 'person',
+			submittedByName: "Phillip",
 			firstName: 'Thomas',
 			lastName: 'Freg'
 		},
@@ -46,6 +49,7 @@
 			submittedBy: 'user',
 			submittedDate: new Date('2022-11-03'),
 			type: 'person',
+			submittedByName: "Phillip",
 			firstName: 'Lucas',
 			lastName: 'Schmindt'
 		},
@@ -55,6 +59,7 @@
 			submittedBy: 'user',
 			submittedDate: new Date('2022-11-12'),
 			type: 'person',
+			submittedByName: "Phillip",
 			firstName: 'Nikolai',
 			lastName: 'Kasik'
 		}
@@ -108,6 +113,7 @@
 				submittedBy: 'user',
 				submittedDate: new Date(),
 				type: 'person',
+				submittedByName: "Phillip",
 				firstName: authorFirstName,
 				lastName: authorLastName
 			};
@@ -123,6 +129,7 @@
 				slugId: authorLastName.toLowerCase() + '-' + idParam,
 				submittedBy: 'user',
 				submittedDate: new Date(),
+				submittedByName: "Phillip",
 				type: 'organization',
 				organizationName: authorOrganizationName
 			};

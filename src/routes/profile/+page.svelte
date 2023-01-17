@@ -31,62 +31,63 @@
 	let allPasswordCriteriaMet: boolean = false;
 	let showPassword: boolean = false;
 
-	let submittedDefinitions: UserDefinition[] = [
-		{
-			id: '1',
-			category: 'human_intelligence',
-			content:
-				'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
-			source: {
-				id: '1',
-				authors: [
-					{
-						id: '1',
-						firstName: 'Bertrand',
-						lastName: 'Dieter',
-						type: 'person',
-						slugId: 'bertrand-dieter-1',
-						submittedBy: 'Dr. Bert',
-						submittedDate: new Date('2023-01-01')
-					}
-				],
-				type: 'book',
-				submittedBy: 'Dr. Bert',
-				submittedDate: new Date('2023-01-01'),
-				publishingDate: new Date('2021-12-10')
-			},
-			submittedBy: 'Dr. Bert',
-			submittedDate: new Date('2022-11-21'),
-			rejectionLog: []
-		},
-		{
-			id: '2',
-			category: 'artificial_intelligence',
-			content:
-				'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
-			source: {
-				id: '2',
-				authors: [
-					{
-						id: '1',
-						firstName: 'Bertrand',
-						lastName: 'Dieter',
-						type: 'person',
-						slugId: 'bertrand-dieter-1',
-						submittedBy: 'Dr. Bert',
-						submittedDate: new Date('2023-01-01')
-					}
-				],
-				type: 'web',
-				submittedBy: 'Dr. Bert',
-				submittedDate: new Date('2023-01-01'),
-				publishingDate: new Date('2021-12-10')
-			},
-			submittedBy: 'Dr. Bert',
-			submittedDate: new Date('2022-11-21'),
-			rejectionLog: []
-		}
-	];
+	// let submittedDefinitions: UserDefinition[] = [
+	// 	{
+	// 		id: '1',
+	// 		category: 'human_intelligence',
+	// 		content:
+	// 			'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
+	// 		source: {
+	// 			id: '1',
+	// 			authors: [
+	// 				{
+	// 					id: '1',
+	// 					firstName: 'Bertrand',
+	// 					lastName: 'Dieter',
+	// 					submittedByName: "Marten K.",
+	// 					type: 'person',
+	// 					slugId: 'bertrand-dieter-1',
+	// 					submittedBy: 'Dr. Bert',
+	// 					submittedDate: new Date('2023-01-01')
+	// 				}
+	// 			],
+	// 			type: 'book',
+	// 			submittedBy: 'Dr. Bert',
+	// 			submittedDate: new Date('2023-01-01')
+	// 		},
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedDate: new Date('2022-11-21'),
+	// 		rejectionLog: []
+	// 	},
+	// 	{
+	// 		id: '2',
+	// 		category: 'artificial_intelligence',
+	// 		content:
+	// 			'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
+	// 		source: {
+	// 			id: '2',
+	// 			authors: [
+	// 				{
+	// 					id: '1',
+	// 					firstName: 'Bertrand',
+	// 					lastName: 'Dieter',
+	// 					type: 'person',
+	// 					slugId: 'bertrand-dieter-1',
+	// 					submittedBy: 'Dr. Bert',
+	// 					submittedByName: "Dr: Bert",
+	// 					submittedDate: new Date('2023-01-01')
+	// 				}
+	// 			],
+	// 			type: 'web',
+	// 			submittedBy: 'Dr. Bert',
+	// 			submittedDate: new Date('2023-01-01'),
+	// 			publishingDate: new Date('2021-12-10')
+	// 		},
+	// 		submittedBy: 'Dr. Bert',
+	// 		submittedDate: new Date('2022-11-21'),
+	// 		rejectionLog: []
+	// 	}
+	// ];
 
 	function changeNickname() {
 		if ($session === undefined) {
@@ -465,7 +466,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each submittedDefinitions as submittedDefinition}
+								<!-- {#each submittedDefinitions as submittedDefinition}
 									<tr
 										class="hover:active cursor-pointer"
 										on:click={() => alert('Now the modal should open to see details')}
@@ -479,7 +480,7 @@
 										>
 										<td>{submittedDefinition.submittedDate.toLocaleDateString()}</td>
 										<td>
-											<!-- <p
+											<p
 												class={`${
 													submittedDefinition.status?.status === 'approved' && 'text-success'
 												} ${submittedDefinition.status?.status === 'pending' && 'text-warning'} ${
@@ -487,11 +488,11 @@
 												}`}
 											>
 												{submittedDefinition.status?.status}
-											</p> -->
+											</p>
 											Status
 										</td>
 									</tr>
-								{/each}
+								{/each} -->
 							</tbody>
 						</table>
 					</div>

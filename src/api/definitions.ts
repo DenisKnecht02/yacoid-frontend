@@ -58,12 +58,12 @@ export async function fetchNewestDefinitions(
 	};
 }
 
-export type GetPageCountRequest = {
+export type GetDefinitionPageCountRequest = {
 	pageSize: number;
 	filter?: DefinitionFilter;
 };
 
-export type GetPageCountResponse = {
+export type GetDefinitionPageCountResponse = {
 	count: number;
 };
 
@@ -75,10 +75,10 @@ export type DefinitionFilter = {
 	publishingYears?: number[];
 };
 
-export async function fetchPageCount(
-	request: GetPageCountRequest
+export async function fetchDefinitionPageCount(
+	request: GetDefinitionPageCountRequest
 ): Promise<GenericResponse<number>> {
-	const response = await fetchPostRequest<GetPageCountResponse>('definitions/page_count', request);
+	const response = await fetchPostRequest<GetDefinitionPageCountResponse>('definitions/page_count', request);
 	return {
 		message: response.message,
 		error: response.error,
@@ -86,7 +86,7 @@ export async function fetchPageCount(
 	};
 }
 
-export type GetPageRequest = {
+export type GetDefinitionPageRequest = {
 	pageSize: number;
 	page: number;
 	filter?: DefinitionFilter;
@@ -97,7 +97,7 @@ type GetFetchedDefinitionsResponse = {
 };
 
 export async function fetchDefinitionsPage(
-	request: GetPageRequest
+	request: GetDefinitionPageRequest
 ): Promise<GenericResponse<Definition[]>> {
 	const response = await fetchPostRequest<GetFetchedDefinitionsResponse>(
 		'definitions/page',

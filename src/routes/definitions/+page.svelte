@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 	import Icon from '$components/Icon.svelte';
 	import FilterBadge from '$components/FilterBadge.svelte';
-	import { Categories, type Category, type Definition } from '$types';
+	import { Categories, type Category, type Definition, type SourceType } from '$types';
 	import { onMount } from 'svelte';
 	import {
 		fetchApproveDefinition,
@@ -13,13 +13,14 @@
 		fetchDefinitionById,
 		fetchDefinitionsPage,
 		fetchDeleteDefinition,
-		fetchPageCount,
+		fetchDefinitionPageCount,
 		fetchRejectDefinition,
 		fetchSubmitDefinition
 	} from '$api/definitions';
 	import { changeRoute } from '$utils';
 	import { session } from '$stores/session';
-	import { fetchDeleteSource } from '$api/sources';
+	import { fetchCreateSource, fetchDeleteSource, fetchSourceById, fetchSourcePage, type CreateSourceRequest } from '$api/sources';
+	import { page } from '$app/stores';
 
 	let pageCount: number = 0;
 	let definitions: Definition[] = [];
@@ -30,7 +31,7 @@
 		(async () => {
 			//await getPageCount();
 			//await submitDefinition();
-			await getDefinitions();
+			//await getDefinitions();
 			//await rejectDefinition();
 			//await changeDefinition();
 			//await approveDefinition();
@@ -38,7 +39,10 @@
 			//console.log(definitions);
 			filteredDefinitions = [...definitions];
 			//console.log(definitionId);
-			await deleteSource();
+			//await deleteSource();
+			//await getSourceById();
+			//await createSource('journal');
+			await getSourcePage();
 		})();
 	});
 
@@ -133,7 +137,7 @@
 	}
 
 	async function getPageCount() {
-		const response = await fetchPageCount({ pageSize: 10 });
+		const response = await fetchDefinitionPageCount({ pageSize: 10 });
 		if (response.error) {
 			console.log(response.error);
 		} else {
@@ -237,11 +241,101 @@
 			console.log('Session is undefined');
 			return;
 		}
-		const response = await fetchDeleteSource($session.id_token, '63b81844aa6675ea76e805bc');
+		const response = await fetchDeleteSource($session.id_token, '63c57ecc1bcda285138a60fc');
 		if (response.error) {
 			console.log(response.error);
 		} else {
 			console.log(response.message);
+		}
+	}
+
+	async function getSourceById() {
+		if ($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchSourceById('63c5715f1bcda285138a60f9');
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.data);
+		}
+	}
+
+	async function createSource(testType: SourceType) {
+		if ($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+
+		let requestObject: CreateSourceRequest;
+
+		if(testType === 'web') {
+			requestObject = {
+				type: testType,
+				authors: ["63c571231bcda285138a60f8"],
+				webProperties: {
+					articleName: "Test",
+					url: "https://www.scribbr.com/citing-sources/cite-a-book/",
+					websiteName: "Scribbr",
+					accessDate: "2023-01-17T10:03:59.904+00:00",
+					publicationDate: "2023-01-17T10:03:59.904+00:00"
+				}	
+			}
+		} else if (testType === 'book') {
+			requestObject = {
+				type: testType,
+				authors: ["63c571231bcda285138a60f8"],
+				bookProperties: {
+					title: "Test",
+					publicationDate: "2023-01-17T10:03:59.904+00:00",
+					pagesFrom: 1,
+					pagesTo: 10,
+					edition: "2nd edition",
+					publisher: "Wiley",
+					isbn: "978-3-12-732320-7"
+				}	
+			}
+		} else {
+			requestObject = {
+				type: testType,
+				authors: ["63c571231bcda285138a60f8"],
+				journalProperties: {
+					title: "Test",
+					publicationDate: "2023-01-17T10:03:59.904+00:00",
+					pagesFrom: 1,
+					pagesTo: 10,
+					journalName: "Testjournal",
+					edition: "2nd edition",
+					publisher: "Wiley",
+					doi: "https://doi.org/10.1177/152700250000100304"
+				}	
+			}
+		}
+	
+		const response = await fetchCreateSource($session.id_token, requestObject!);
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.message);
+		}
+	}
+
+	async function getSourcePage() {
+		if ($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchSourcePage({
+			page: 1,
+			pageSize: 5			
+		}
+		);
+
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.data);
 		}
 	}
 
