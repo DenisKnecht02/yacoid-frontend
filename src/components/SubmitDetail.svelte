@@ -8,12 +8,7 @@
   export let submitAuthor: string = '';
   export let submitPublishing_date: string = '';
   export let submitSource: string = '';
-  
-	export let callbackFunction: Function = () => {};
-  
-  //alert(submitAuthor)
-  
-	// on:click={() => alert('Now the modal should open to see details')}
+	//export let callbackFunction: Function = () => {};
   
 </script>
 

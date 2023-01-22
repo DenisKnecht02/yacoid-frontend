@@ -717,7 +717,7 @@
 			<div class="flex flex-col gap-4 p-4">
 				<p class="text-lg lg:text-xl">
 					Review all of your submitted definitions and their status.
-					<span class="font-medium">(click row for details)</span>
+					<!-- <span class="font-medium">(click row for details)</span> -->
 				</p>
 				<div class="overflow-x-auto">
 					<table class="table w-full">
@@ -728,24 +728,13 @@
 								<th>Definition</th>
 								<th>Submitted On</th>
 								<th>Submission Status</th>
+								<th class="flex justify-center">Details</th>
 							</tr>
 						</thead>
 						<tbody>
 							{#each submittedDefinitions as submittedDefinition}
-							<label for="modal_accept1">
-								<SubmitDetail
-									modalName="modal_accept1"
-									modalTitle="Details on your submitted definition"
-									submitDate={submittedDefinition.submittedOn.toDateString()}
-									submitDef={submittedDefinition.content}
-									submitFeedback={submittedDefinition.status?.declinementMessage}
-									submitStatus={submittedDefinition.status?.status}
-									submitPublishing_date={submittedDefinition.publishingDate.toDateString()}
-									submitAuthor={submittedDefinition.author}
-									submitSource={submittedDefinition.source}
-								/>
 								<tr
-									class="hover:active cursor-pointer"
+									class="" 
 
 								>
 									<th>{submittedDefinitions.indexOf(submittedDefinition) + 1}</th>
@@ -767,8 +756,21 @@
 											{submittedDefinition.status?.status}
 										</p>
 									</td>
+									<td>
+										<label for="modal_accept1" class="flex justify-center hover:active cursor-pointer"><Icon icon="arrow-right-circle" color="#000000" strokeWidth="1.5" /></label>
+									</td>
 								</tr>
-							</label>
+								<SubmitDetail
+								modalName="modal_accept1"
+								modalTitle="Details on your submitted definition"
+								submitDate={submittedDefinition.submittedOn.toDateString()}
+								submitDef={submittedDefinition.content}
+								submitFeedback={submittedDefinition.status?.declinementMessage}
+								submitStatus={submittedDefinition.status?.status}
+								submitPublishing_date={submittedDefinition.publishingDate.toDateString()}
+								submitAuthor={submittedDefinition.author}
+								submitSource={submittedDefinition.source}
+							/>
 							{/each}
 						</tbody>
 					</table>
