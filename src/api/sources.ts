@@ -14,6 +14,7 @@ import {
 	fetchPostRequest,
 	fetchProtectedDeleteRequest,
 	fetchProtectedPostRequest,
+	fetchProtectedPutRequest,
 	type GenericResponse
 } from './api';
 
@@ -96,9 +97,6 @@ export async function fetchCreateSource(
 	};
 }
 
-//TODO: Filter testen und Request Testen
-
-
 type SourceFilter = {
 	approved?: boolean,
 	types?: SourceType[],
@@ -143,5 +141,55 @@ export async function fetchSourcePage(
 		message: response.message,
 		error: response.error,
 		data: data?.sources
+	};
+}
+
+export type GetSourcePageCountRequest = {
+	pageSize: number;
+	filter?:SourceFilter;
+}
+
+export type GetSourcePageCountResponse = {
+	count: number;
+}
+
+export async function fetchSourcePageCount(
+	request: GetSourcePageCountRequest
+): Promise<GenericResponse<number>> {
+	const response = await fetchPostRequest<GetSourcePageCountResponse>(
+		'sources/page_count',
+		request
+	);
+
+	return {
+		message: response.message,
+		error: response.error,
+		data: response.data?.count
+	};
+}
+
+export type ChangeSourceRequest = {
+	id: string;
+	type: SourceType;
+	authors?: string[];
+	bookProperties?: FetchedBookProperties;
+	journalProperties?: FetchedJournalProperties;
+	webProperties?: FetchedWebProperties;
+}
+
+export async function fetchChangeSource(
+	token: string,
+	request: ChangeSourceRequest
+): Promise<GenericResponse<string>> {
+	const response = await fetchProtectedPutRequest<string>(
+		token,
+		'sources',
+		request
+	);
+
+	return {
+		message: response.message,
+		error: response.error,
+		data: response.data
 	};
 }
