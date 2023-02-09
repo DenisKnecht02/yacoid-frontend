@@ -1,28 +1,13 @@
-import type { FetchedStats, Stats } from "$types";
+import type { Stats } from "$types";
 import { fetchGetRequest, type GenericResponse } from "./api";
 
-type GetFetchedStatsResponse = {
-	stats: FetchedStats;
-};
-
-export type GetStatsResponse = {
-	stats: Stats;
-};
 
 export async function fetchStatistics(): Promise<GenericResponse<Stats>> {
-	const response = await fetchGetRequest<GetFetchedStatsResponse>('common/statistics');
-
-	let data: GetStatsResponse | undefined = undefined;
-	
-	if (response.data) {
-		data = {
-			stats: response.data.stats
-		};
-	}
+	const response = await fetchGetRequest<Stats>('common/statistics');
 
 	return {
 		message: response.message,
 		error: response.error,
-		data: data?.stats
+		data: response.data
 	};
 }

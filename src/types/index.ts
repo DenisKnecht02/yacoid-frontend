@@ -12,15 +12,6 @@ export function convertArray<U, V>(array: U[], converter: (item: U) => V): V[] {
 	return convertedArray;
 }
 
-export type FetchedStats = {
-	definitionCount: number;
-  definitionCountInCurrentQuarter: number;
-  sourceCount: number;
-  sourceCountInCurrentQuarter: number;
-  authorCount: number;
-  authorCountInCurrentQuarter: number;
-};
-
 export type Stats = {
 	definitionCount: number;
   definitionCountInCurrentQuarter: number;
