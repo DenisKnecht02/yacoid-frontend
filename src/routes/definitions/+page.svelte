@@ -20,10 +20,12 @@
 	import { changeRoute } from '$utils';
 	import { session } from '$stores/session';
 	import {
+		fetchChangeSource,
 		fetchCreateSource,
 		fetchDeleteSource,
 		fetchSourceById,
 		fetchSourcePage,
+		fetchSourcePageCount,
 		type CreateSourceRequest
 	} from '$api/sources';
 	import { page } from '$app/stores';
@@ -48,7 +50,9 @@
 			//await deleteSource();
 			//await getSourceById();
 			//await createSource('journal');
-			await getSourcePage();
+			//await getSourcePage();
+			//await getSourcePageCount();
+			//await changeSource();
 		})();
 	});
 
@@ -256,10 +260,6 @@
 	}
 
 	async function getSourceById() {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
 		const response = await fetchSourceById('63c5715f1bcda285138a60f9');
 		if (response.error) {
 			console.log(response.error);
@@ -328,10 +328,6 @@
 	}
 
 	async function getSourcePage() {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
 		const response = await fetchSourcePage({
 			page: 1,
 			pageSize: 5
@@ -341,6 +337,40 @@
 			console.log(response.error);
 		} else {
 			console.log(response.data);
+		}
+	}
+
+	async function getSourcePageCount() {
+		const response = await fetchSourcePageCount({ pageSize: 10 });
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.data);
+		}
+	}
+
+	async function changeSource() {
+		if ($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchChangeSource($session.id_token, {
+			id: '63cfda8e725461311b33a299',
+			type: 'book',
+			bookProperties: {
+				title: 'bla',
+				publicationDate: '2020-11-30T00:00:00.000Z',
+				pagesFrom: 1,
+				pagesTo: 10,
+				edition: '2nd edition',
+				publisher: 'Wiley',
+				isbn: '978-3-12-732320-7'
+			}
+		});
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.message);
 		}
 	}
 
