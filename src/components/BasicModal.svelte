@@ -13,9 +13,13 @@
 			{modalContent}
 		</p>
 		<div class="modal-action">
-			<button class="btn btn-sm place-self-end modal-button" on:click={() => callbackFunction()}>
+			<label
+				for={modalName}
+				class="btn btn-sm place-self-end modal-button"
+				on:click={() => callbackFunction()}
+			>
 				Proceed
-			</button>
+			</label>
 			<label for={modalName} class="btn btn-sm btn-primary place-self-end modal-button">
 				Cancel
 			</label>

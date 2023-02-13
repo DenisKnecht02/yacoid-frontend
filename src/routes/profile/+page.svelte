@@ -8,6 +8,7 @@
 	import type { AuthorizerState } from '@authorizerdev/authorizer-svelte/types';
 	import { getContext } from 'svelte';
 	import { changeRoute } from '$utils';
+	import type { User, UpdateProfileInput } from '@authorizerdev/authorizer-js';
 
 	const store: Writable<AuthorizerState> = getContext('authorizerContext');
 
@@ -16,9 +17,7 @@
 
 	let eMailEditable: boolean = false;
 	let newEMail: string = '';
-	let currentEMail: string = 'kala@gmail.com';
 
-	let userPassword: string = 'Yacoid123!'; /*user.password*/
 	let currentPassword: string = '';
 	let newPassword: string = '';
 	let newPasswordConfirmed: string = '';
@@ -89,23 +88,24 @@
 	// 	}
 	// ];
 
-	function changeNickname() {
+	function updateUser(object: UpdateProfileInput) {
 		if ($session === undefined) {
 			console.log('Session is undefined.');
 			return;
 		}
-		console.log($session.id_token);
+
 		let headers: HeadersInit = {
-			Authorization: `Bearer ${$session.id_token}`,
+			Authorization: `Bearer ${$session.access_token}`,
 			'Content-Type': 'application/json'
 		};
 
-		$store.authorizerRef.updateProfile(
-			{
-				nickname: newNickname
-			},
-			headers
-		);
+		$store.authorizerRef.updateProfile(object, headers);
+		Object.keys(object).forEach((keyString) => {
+			if ($store.user) {
+				//@ts-ignore
+				$store.user[keyString] = object[keyString];
+			}
+		});
 	}
 
 	function checkAndSetMail() {
@@ -113,33 +113,43 @@
 			/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 		);
 		if (regex.test(newEMail)) {
-			currentEMail = newEMail;
-			console.log(currentEMail);
+			updateUser({
+				email: newEMail
+			});
 		} else {
 			newEMail = '';
 			alert('Invalid EMail adress.');
 		}
 	}
 
-	function setNewPassword() {
-		if (currentPassword === userPassword) {
-			if (allPasswordCriteriaMet) {
-				if (newPassword === newPasswordConfirmed) {
-					userPassword = newPassword;
-					currentPassword = '';
-					newPassword = '';
-					newPasswordConfirmed = '';
-					console.log(userPassword);
-					goto('/profiles/private');
-				} else {
-					alert('New password and confirmed password are not the same!');
-				}
-			} else {
-				alert('New password doesn´t meet all necessary criteria!');
-			}
-		} else {
-			alert('Current password is wrong!');
+	function changePassword() {
+		if ($session === undefined) {
+			console.log('Session is undefined.');
+			return;
 		}
+
+		let headers: HeadersInit = {
+			Authorization: `Bearer ${$session.access_token}`,
+			'Content-Type': 'application/json'
+		};
+
+		let response = $store.authorizerRef.updateProfile(
+			{
+				old_password: currentPassword,
+				new_password: newPassword,
+				confirm_new_password: newPasswordConfirmed
+			},
+			headers
+		);
+
+		// response.catch((error) => {
+		// 	console.log('error found');
+		// 	console.log(error);
+		// });
+
+		currentPassword = '';
+		newPassword = '';
+		newPasswordConfirmed = '';
 	}
 
 	function setPasswordFocused() {
@@ -151,7 +161,7 @@
 	}
 
 	function checkPassword() {
-		let lengthCriteriaRegex = new RegExp('(?=.{8,})');
+		let lengthCriteriaRegex = new RegExp('(?=.{6,})');
 		let uppercaseCriteriaRegex = new RegExp('(?=.*[A-Z])');
 		let lowercaseCriteriaRegex = new RegExp('(?=.*[a-z])');
 		let digitCriteriaRegex = new RegExp('(?=.*[0-9])');
@@ -217,7 +227,9 @@
 					</h1>
 					<button
 						on:click={() => {
-							changeNickname();
+							updateUser({
+								nickname: newNickname
+							});
 							nicknameEditable = !nicknameEditable;
 						}}><Icon icon="save" color="#000000" strokeWidth="1.5" /></button
 					>
@@ -232,6 +244,7 @@
 					</h1>
 					<button
 						on:click={() => {
+							newNickname = $store.user?.nickname ?? '';
 							nicknameEditable = !nicknameEditable;
 						}}><Icon icon="edit" color="#000000" strokeWidth="1.5" /></button
 					>
@@ -263,11 +276,12 @@
 							<div class="flex gap-3">
 								<div>
 									<h1 class="text-lg md:text-xl bg-secondary p-3 rounded-xl text-white">
-										{currentEMail}
+										{$store.user?.email}
 									</h1>
 								</div>
 								<button
 									on:click={() => {
+										newEMail = $store.user?.email ?? '';
 										eMailEditable = !eMailEditable;
 									}}><Icon icon="edit" color="#000000" strokeWidth="1.5" /></button
 								>
@@ -331,9 +345,9 @@
 												<li>
 													<div class="flex gap-1">
 														{#if lengthCriteriaMet}
-															<p class="text-green-600">✔️ min. 8 characters long</p>
+															<p class="text-green-600">✔️ min. 6 characters long</p>
 														{:else}
-															<p class="text-red-600">❌ min. 8 characters long</p>
+															<p class="text-red-600">❌ min. 6 characters long</p>
 														{/if}
 													</div>
 												</li>
@@ -395,7 +409,7 @@
 										/>
 									{/if}
 								</div>
-								{#if currentPassword === '' || newPassword === '' || newPasswordConfirmed === ''}
+								{#if currentPassword === '' || newPassword === '' || newPasswordConfirmed === '' || !allPasswordCriteriaMet || newPassword !== newPasswordConfirmed}
 									<button class="btn btn-primary btn-disabled place-self-end"
 										>Change password
 									</button>
@@ -409,7 +423,7 @@
 										modalName="passwordModal"
 										modalTitle="Change password"
 										modalContent="Do you really want to change your password? This step can not be undone."
-										callbackFunction={setNewPassword}
+										callbackFunction={changePassword}
 									/>
 								{/if}
 							</div>

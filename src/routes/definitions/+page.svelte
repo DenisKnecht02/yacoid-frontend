@@ -19,7 +19,13 @@
 	} from '$api/definitions';
 	import { changeRoute } from '$utils';
 	import { session } from '$stores/session';
-	import { fetchCreateSource, fetchDeleteSource, fetchSourceById, fetchSourcePage, type CreateSourceRequest } from '$api/sources';
+	import {
+		fetchCreateSource,
+		fetchDeleteSource,
+		fetchSourceById,
+		fetchSourcePage,
+		type CreateSourceRequest
+	} from '$api/sources';
 	import { page } from '$app/stores';
 
 	let pageCount: number = 0;
@@ -31,7 +37,7 @@
 		(async () => {
 			//await getPageCount();
 			//await submitDefinition();
-			//await getDefinitions();
+			await getDefinitions();
 			//await rejectDefinition();
 			//await changeDefinition();
 			//await approveDefinition();
@@ -270,49 +276,49 @@
 
 		let requestObject: CreateSourceRequest;
 
-		if(testType === 'web') {
+		if (testType === 'web') {
 			requestObject = {
 				type: testType,
-				authors: ["63c571231bcda285138a60f8"],
+				authors: ['63c571231bcda285138a60f8'],
 				webProperties: {
-					articleName: "Test",
-					url: "https://www.scribbr.com/citing-sources/cite-a-book/",
-					websiteName: "Scribbr",
-					accessDate: "2023-01-17T10:03:59.904+00:00",
-					publicationDate: "2023-01-17T10:03:59.904+00:00"
-				}	
-			}
+					articleName: 'Test',
+					url: 'https://www.scribbr.com/citing-sources/cite-a-book/',
+					websiteName: 'Scribbr',
+					accessDate: '2023-01-17T10:03:59.904+00:00',
+					publicationDate: '2023-01-17T10:03:59.904+00:00'
+				}
+			};
 		} else if (testType === 'book') {
 			requestObject = {
 				type: testType,
-				authors: ["63c571231bcda285138a60f8"],
+				authors: ['63c571231bcda285138a60f8'],
 				bookProperties: {
-					title: "Test",
-					publicationDate: "2023-01-17T10:03:59.904+00:00",
+					title: 'Test',
+					publicationDate: '2023-01-17T10:03:59.904+00:00',
 					pagesFrom: 1,
 					pagesTo: 10,
-					edition: "2nd edition",
-					publisher: "Wiley",
-					isbn: "978-3-12-732320-7"
-				}	
-			}
+					edition: '2nd edition',
+					publisher: 'Wiley',
+					isbn: '978-3-12-732320-7'
+				}
+			};
 		} else {
 			requestObject = {
 				type: testType,
-				authors: ["63c571231bcda285138a60f8"],
+				authors: ['63c571231bcda285138a60f8'],
 				journalProperties: {
-					title: "Test",
-					publicationDate: "2023-01-17T10:03:59.904+00:00",
+					title: 'Test',
+					publicationDate: '2023-01-17T10:03:59.904+00:00',
 					pagesFrom: 1,
 					pagesTo: 10,
-					journalName: "Testjournal",
-					edition: "2nd edition",
-					publisher: "Wiley",
-					doi: "https://doi.org/10.1177/152700250000100304"
-				}	
-			}
+					journalName: 'Testjournal',
+					edition: '2nd edition',
+					publisher: 'Wiley',
+					doi: 'https://doi.org/10.1177/152700250000100304'
+				}
+			};
 		}
-	
+
 		const response = await fetchCreateSource($session.id_token, requestObject!);
 		if (response.error) {
 			console.log(response.error);
@@ -328,9 +334,8 @@
 		}
 		const response = await fetchSourcePage({
 			page: 1,
-			pageSize: 5			
-		}
-		);
+			pageSize: 5
+		});
 
 		if (response.error) {
 			console.log(response.error);
