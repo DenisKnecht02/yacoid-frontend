@@ -1,32 +1,80 @@
 <script lang="ts">
+	import { fetchAuthorPage, fetchAuthorPageCount, type AuthorFilter } from '$api/authors';
+	import type { Author } from '$types';
+	import { getSingleAuthorDisplayName } from '$utils';
 	import FilteringSelectionButton from './FilteringSelectionButton.svelte';
 
-	export let allAuthors: string[];
-	export let selectedAuthors: string[];
+	export let authors: Author[];
+	export let selectedAuthors: Author[] = [];
 	export let modalName: string;
 	export let setSelectedAuthors: Function;
+	let authorPageCount: number = 0;
+	let authorCurrentActivePage: number = 1;
 
-	let allSelected: boolean = true;
-	let authorSearchCriteria: string = '';
+	let allSelected: boolean = false;
+	let searchCriteria: string = '';
+	let currentFilter: AuthorFilter = { approved: true };
 
-	function changeSingleSelected(author: string) {
-		if (selectedAuthors.includes(author)) {
-			selectedAuthors = [...selectedAuthors].filter(function (element) {
-				return author === element;
-			});
+	(async () => {
+		await getPageCount();
+		await getAuthors();
+	})();
+
+	async function getPageCount() {
+		const response = await fetchAuthorPageCount({
+			pageSize: 10,
+			filter: currentFilter
+		});
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			authorPageCount = response.data!;
+		}
+	}
+
+	async function getAuthors() {
+		const response = await fetchAuthorPage({
+			pageSize: 10,
+			page: authorCurrentActivePage,
+			filter: currentFilter
+		});
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			authors = response.data!;
+		}
+	}
+
+	function changeSingleSelected(author: Author) {
+		if (selectedAuthors.find((selectedAuthor: Author) => selectedAuthor.id === author.id)) {
+			const index = selectedAuthors.findIndex(
+				(selectedAuthor: Author) => selectedAuthor.id === author.id
+			);
+			if (index !== -1) {
+				selectedAuthors.splice(index, 1);
+			}
 		} else {
 			selectedAuthors.push(author);
 		}
-
-		allSelected = selectedAuthors.length === selectedAuthors.length;
 		selectedAuthors = selectedAuthors;
 	}
 
 	function changeAllSelected(truthState: boolean) {
 		if (truthState) {
-			selectedAuthors = [...allAuthors];
+			// if select all was clicked, add the currently displayed authors to all selectedAuthors
+			selectedAuthors = [...selectedAuthors, ...authors];
 		} else {
-			selectedAuthors.splice(0);
+			// if deselect all was clicked, remove the currently displayed authors from all selectedAuthors
+			authors.forEach((author: Author) => {
+				if (selectedAuthors.find((selectedAuthor: Author) => selectedAuthor.id === author.id)) {
+					const index = selectedAuthors.findIndex(
+						(selectedAuthor: Author) => selectedAuthor.id === author.id
+					);
+					if (index !== -1) {
+						selectedAuthors.splice(index, 1);
+					}
+				}
+			});
 		}
 		allSelected = truthState;
 		selectedAuthors = selectedAuthors;
@@ -38,13 +86,36 @@
 	<div class="flex flex-col modal-box relative gap-6">
 		<h3 class="font-bold text-xl">FILTER ALL AUTHORS</h3>
 		<div class="grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-			{#each allAuthors as author}
-				{#if author.toLowerCase().includes(authorSearchCriteria.toLowerCase())}
-					<FilteringSelectionButton
-						name={author}
-						selected={selectedAuthors.includes(author)}
-						on:click={() => changeSingleSelected(author)}
-					/>
+			{#each authors as author}
+				<FilteringSelectionButton
+					name={getSingleAuthorDisplayName(author)}
+					selected={selectedAuthors.find((selectedAuthor) => selectedAuthor.id === author.id)
+						? true
+						: false}
+					on:click={() => changeSingleSelected(author)}
+				/>
+			{/each}
+		</div>
+		<div class="btn-group flex justify-center items-center">
+			{#each Array(authorPageCount) as _, index (index)}
+				{#if index + 1 === authorCurrentActivePage}
+					<button
+						class="btn btn-secondary"
+						on:click={() => {
+							authorCurrentActivePage = index + 1;
+							getPageCount();
+							getAuthors();
+						}}>{index + 1}</button
+					>
+				{:else}
+					<button
+						class="btn"
+						on:click={() => {
+							authorCurrentActivePage = index + 1;
+							getPageCount();
+							getAuthors();
+						}}>{index + 1}</button
+					>
 				{/if}
 			{/each}
 		</div>
@@ -63,19 +134,21 @@
 				type="text"
 				placeholder="🔍 Search for author"
 				class="input input-bordered max-w-3xl"
-				bind:value={authorSearchCriteria}
+				bind:value={searchCriteria}
+				on:input={() => {
+					if (searchCriteria) {
+						// when the user wants to search for specific authors, the filter will be set by using firstName
+						// however, in the backend a fuzzy search is performed on all three name types (firstName, lastName, organizationName)
+						currentFilter = { ...currentFilter, firstName: searchCriteria };
+						getAuthors();
+					} else {
+						delete currentFilter.firstName;
+						getAuthors();
+					}
+				}}
 			/>
 			<div class="flex justify-start md:justify-self-end gap-2">
-				<label
-					for={modalName}
-					class="btn btn-error"
-					on:click={() => {
-						selectedAuthors = [...allAuthors];
-						setSelectedAuthors(selectedAuthors);
-					}}
-				>
-					Cancel
-				</label>
+				<label for={modalName} class="btn btn-error"> Cancel </label>
 				<label for={modalName} class="btn" on:click={() => setSelectedAuthors(selectedAuthors)}>
 					Filter
 				</label>

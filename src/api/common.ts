@@ -1,9 +1,8 @@
-import type { Stats } from "$types";
-import { fetchGetRequest, type GenericResponse } from "./api";
+import type { Statistics } from '$types';
+import { fetchGetRequest, type GenericResponse } from './api';
 
-
-export async function fetchStatistics(): Promise<GenericResponse<Stats>> {
-	const response = await fetchGetRequest<Stats>('common/statistics');
+export async function fetchStatistics(): Promise<GenericResponse<Statistics>> {
+	const response = await fetchGetRequest<Statistics>('common/statistics');
 
 	return {
 		message: response.message,

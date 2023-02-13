@@ -1,21 +1,21 @@
-import { 
-  convertArray, 
-  convertFetchedAuthorToAuthor, 
-  type Author, type AuthorType, 
-  type FetchedAuthor, 
-  type OrganizationAuthorProps, 
-  type PersonAuthorProps 
-} from "$types";
+import {
+	convertArray,
+	convertFetchedAuthorToAuthor,
+	type Author,
+	type AuthorType,
+	type FetchedAuthor,
+	type OrganizationAuthorProps,
+	type PersonAuthorProps
+} from '$types';
 
-import { 
-  fetchGetRequest, 
-  fetchPostRequest, 
-  fetchProtectedDeleteRequest, 
-  fetchProtectedPostRequest, 
-  fetchProtectedPutRequest, 
-  type GenericResponse 
-} from "./api";
-
+import {
+	fetchGetRequest,
+	fetchPostRequest,
+	fetchProtectedDeleteRequest,
+	fetchProtectedPostRequest,
+	fetchProtectedPutRequest,
+	type GenericResponse
+} from './api';
 
 type GetFetchedAuthorResponse = {
 	author: FetchedAuthor;
@@ -31,7 +31,7 @@ export async function fetchAuthorById(id: string): Promise<GenericResponse<Autho
 	});
 
 	let data: GetAuthorResponse | undefined = undefined;
-	
+
 	if (response.data) {
 		data = {
 			author: convertFetchedAuthorToAuthor(response.data.author)
@@ -49,21 +49,17 @@ export type CreateAuthorRequest = {
 	type: AuthorType;
 	personProperties?: PersonAuthorProps;
 	organizationProperties?: OrganizationAuthorProps;
-}
+};
 
 export type CreateAuthorResponse = {
-  authorId: string;
-}
+	authorId: string;
+};
 
 export async function fetchCreateAuthor(
 	token: string,
 	request: CreateAuthorRequest
 ): Promise<GenericResponse<string>> {
-	const response = await fetchProtectedPostRequest<CreateAuthorResponse>(
-		token,
-		'authors',
-		request
-	);
+	const response = await fetchProtectedPostRequest<CreateAuthorResponse>(token, 'authors', request);
 
 	return {
 		message: response.message,
@@ -72,20 +68,19 @@ export async function fetchCreateAuthor(
 	};
 }
 
-
-type AuthorFilter = {
-	approved?: boolean,
-	types?: AuthorType[],
-	firstName?: string,
-	lastName?: string,
-  organizationName?: string, 
-}
+export type AuthorFilter = {
+	approved?: boolean;
+	types?: AuthorType[];
+	firstName?: string;
+	lastName?: string;
+	organizationName?: string;
+};
 
 export type GetAuthorPageRequest = {
 	page: number;
 	pageSize: number;
-	filter?:AuthorFilter;
-}
+	filter?: AuthorFilter;
+};
 
 type GetFetchedAuthorsResponse = {
 	authors: FetchedAuthor[];
@@ -98,10 +93,7 @@ export type GetAuthorPageResponse = {
 export async function fetchAuthorPage(
 	request: GetAuthorPageRequest
 ): Promise<GenericResponse<Author[]>> {
-	const response = await fetchPostRequest<GetFetchedAuthorsResponse>(
-		'authors/page',
-		request
-	);
+	const response = await fetchPostRequest<GetFetchedAuthorsResponse>('authors/page', request);
 
 	let data: GetAuthorPageResponse | undefined = undefined;
 
@@ -121,15 +113,14 @@ export async function fetchAuthorPage(
 	};
 }
 
-
 export type GetAuthorPageCountRequest = {
 	pageSize: number;
 	filter?: AuthorFilter;
-}
+};
 
 export type GetAuthorPageCountResponse = {
 	count: number;
-}
+};
 
 export async function fetchAuthorPageCount(
 	request: GetAuthorPageCountRequest
@@ -151,17 +142,13 @@ export type ChangeAuthorRequest = {
 	type: AuthorType;
 	personProperties?: PersonAuthorProps;
 	organizationProperties?: OrganizationAuthorProps;
-}
+};
 
 export async function fetchChangeAuthor(
 	token: string,
 	request: ChangeAuthorRequest
 ): Promise<GenericResponse<string>> {
-	const response = await fetchProtectedPutRequest<string>(
-		token,
-		'authors',
-		request
-	);
+	const response = await fetchProtectedPutRequest<string>(token, 'authors', request);
 
 	return {
 		message: response.message,

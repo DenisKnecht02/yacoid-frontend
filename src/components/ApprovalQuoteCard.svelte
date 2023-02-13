@@ -1,17 +1,49 @@
 <script lang="ts">
-	export let category: string = '';
-	export let quote: string = '';
-	export let author: string = '';
-	export let publishing_date: string = '';
-	export let source: string = '';
-	export let submittedBy: string = '';
-	export let submittedOn: string = '';
+	import { fetchApproveDefinition, fetchRejectDefinition } from '$api/definitions';
+	import { session } from '$stores/session';
+	import {
+		CategoryLabel,
+		getAuthorsDisplayNames,
+		getDefinitionPublishingDate,
+		getSourceDisplayName,
+		type Definition
+	} from '$types';
+	import { createEventDispatcher } from 'svelte';
+
+	export let definition: Definition;
 	let declinementReason: string = '';
 
 	let showEmail: boolean = false;
 
 	function changeShowEmail() {
 		showEmail = !showEmail;
+	}
+
+	const dispatch = createEventDispatcher();
+
+	async function approveDefinition() {
+		if ($session) {
+			const response = await fetchApproveDefinition($session.id_token, definition.id);
+			if (response.error) {
+				console.log(response.error);
+			} else {
+				dispatch('handle');
+			}
+		}
+	}
+
+	async function rejectDefinition() {
+		if ($session && declinementReason) {
+			const response = await fetchRejectDefinition($session.id_token, {
+				id: definition.id,
+				content: declinementReason
+			});
+			if (response.error) {
+				console.log(response.error);
+			} else {
+				dispatch('handle');
+			}
+		}
 	}
 </script>
 
@@ -21,17 +53,19 @@
 		<div class="flex flex-col gap-1 w-full h-full">
 			<div class="flex gap-2 md:flex-row w-full h-full items-center justify-between">
 				<h2 class="font-medium text-lg">User:</h2>
-				<p class="font text-base">{submittedBy}</p>
+				<p class="font text-base">{definition.submittedByName}</p>
 			</div>
 			<div class="flex gap-2 md:flex-row w-full h-full items-center justify-between">
 				<h2 class="font-medium text-lg">Sent in:</h2>
-				<p class="font text-base">{new Date(submittedOn).toLocaleDateString()}</p>
+				<p class="font text-base">{definition.submittedDate.toLocaleDateString()}</p>
 			</div>
 		</div>
 	</div>
 	<div class="card-body gap-6">
 		<div class="flex flex-col sm:flex-row gap-3 h-12 sm:justify-between sm:items-center">
-			<div class="badge badge-secondary text-base w-fit h-fit">{category}</div>
+			<div class="badge badge-secondary text-base w-fit h-fit">
+				{CategoryLabel[definition.category]}
+			</div>
 			<div id="forSymbol" class="flex gap-2 items-center">
 				<label for="modal_accept" class="cursor-pointer px-2 text-lg bg-green-400 rounded-lg p-1">
 					👍
@@ -41,21 +75,27 @@
 				</label>
 			</div>
 		</div>
-		<p class="flex italic text-xl text-justify items-center">"{quote}"</p>
+		<p class="flex italic text-xl text-justify items-center">"{definition.content}"</p>
 		<div>
-			<p class="flex justify-end items-end font-bold">- {author} ({publishing_date})</p>
-			<p class="flex justify-end items-end italic">from: {source}</p>
+			<p class="flex justify-end items-end font-bold">
+				- {getAuthorsDisplayNames(...definition.source.authors).join('; ')}
+				({getDefinitionPublishingDate(definition)?.toLocaleDateString()})
+			</p>
+			<p class="flex justify-end text-end break-all italic">
+				from: {getSourceDisplayName(definition.source)}
+			</p>
 		</div>
 	</div>
 </div>
 
 <input type="checkbox" id="modal_accept" class="modal-toggle" />
-<label for="modal_accept" class="modal cursor-pointer">
+<label for="modal_accept" class="modal cursor-pointer" on:click={approveDefinition}>
 	<label class="modal-box relative" for="">
 		<div class="flex flex-col w-full h-full gap-4 p-2 ">
 			<h3 class="text-2xl font-bold">Definition accepted</h3>
 			<p class="text-lg text-justify">
-				An e-mail of approval will be sent to {submittedBy} and the definition will be added to the list.
+				An e-mail of approval will be sent to {definition.submittedByName} and the definition will be
+				added to the list.
 			</p>
 		</div>
 	</label>
@@ -90,9 +130,9 @@
 				{#if showEmail}
 					<div class="w-full h-full bg-gray-300 rounded-xl font-mono p-4">
 						<p>
-							Dear {submittedBy}, <br /> <br /> Unfortunately, your definition, sent on {new Date(
-								submittedOn
-							).toLocaleDateString()}, was declined due to the following reason. <br /> <br />
+							Dear {definition.submittedByName}, <br /> <br /> Unfortunately, your definition, sent
+							on {definition.submittedDate.toLocaleDateString()}, was declined due to the following
+							reason. <br /> <br />
 							{declinementReason} <br /> <br />
 							Click on the following link to see more details and edit your definition.<br />
 							<a href="https://www.google.com" class="text-blue-500 underline">Link</a> <br />
@@ -105,7 +145,8 @@
 			</div>
 			<div class="modal-action">
 				<label for="modal_decline" class="btn btn-error">Cancel</label>
-				<label for="modal_decline" class="btn btn-secondary">Send</label>
+				<label for="modal_decline" class="btn btn-secondary" on:click={rejectDefinition}>Send</label
+				>
 			</div>
 		</div>
 	</label>

@@ -8,9 +8,18 @@
 	import type { AuthorizerState } from '@authorizerdev/authorizer-svelte/types';
 	import { getContext } from 'svelte';
 	import { changeRoute } from '$utils';
-	import type { User, UpdateProfileInput } from '@authorizerdev/authorizer-js';
+	import type { UpdateProfileInput } from '@authorizerdev/authorizer-js';
+	import {
+		fetchChangeDefinition,
+		fetchDefinitionPageCount,
+		fetchUsersOwnDefinitionsPage
+	} from '$api/definitions';
 
 	const store: Writable<AuthorizerState> = getContext('authorizerContext');
+
+	let pageCount: number = 0;
+	let definitions: UserDefinition[] = [];
+	let currentActivePage: number = 1;
 
 	let nicknameEditable: boolean = false;
 	let newNickname: string = '';
@@ -30,63 +39,45 @@
 	let allPasswordCriteriaMet: boolean = false;
 	let showPassword: boolean = false;
 
-	// let submittedDefinitions: UserDefinition[] = [
-	// 	{
-	// 		id: '1',
-	// 		category: 'human_intelligence',
-	// 		content:
-	// 			'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
-	// 		source: {
-	// 			id: '1',
-	// 			authors: [
-	// 				{
-	// 					id: '1',
-	// 					firstName: 'Bertrand',
-	// 					lastName: 'Dieter',
-	// 					submittedByName: "Marten K.",
-	// 					type: 'person',
-	// 					slugId: 'bertrand-dieter-1',
-	// 					submittedBy: 'Dr. Bert',
-	// 					submittedDate: new Date('2023-01-01')
-	// 				}
-	// 			],
-	// 			type: 'book',
-	// 			submittedBy: 'Dr. Bert',
-	// 			submittedDate: new Date('2023-01-01')
-	// 		},
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedDate: new Date('2022-11-21'),
-	// 		rejectionLog: []
-	// 	},
-	// 	{
-	// 		id: '2',
-	// 		category: 'artificial_intelligence',
-	// 		content:
-	// 			'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
-	// 		source: {
-	// 			id: '2',
-	// 			authors: [
-	// 				{
-	// 					id: '1',
-	// 					firstName: 'Bertrand',
-	// 					lastName: 'Dieter',
-	// 					type: 'person',
-	// 					slugId: 'bertrand-dieter-1',
-	// 					submittedBy: 'Dr. Bert',
-	// 					submittedByName: "Dr: Bert",
-	// 					submittedDate: new Date('2023-01-01')
-	// 				}
-	// 			],
-	// 			type: 'web',
-	// 			submittedBy: 'Dr. Bert',
-	// 			submittedDate: new Date('2023-01-01'),
-	// 			publishingDate: new Date('2021-12-10')
-	// 		},
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedDate: new Date('2022-11-21'),
-	// 		rejectionLog: []
-	// 	}
-	// ];
+	async function getPageCount() {
+		if ($session && $session.user) {
+			const response = await fetchDefinitionPageCount(
+				{
+					pageSize: 5,
+					filter: { userId: $session.user.id }
+				},
+				$session.id_token
+			);
+			if (response.error) {
+				console.log(response.error);
+			} else {
+				pageCount = response.data!;
+			}
+		}
+	}
+
+	async function getDefinitions() {
+		if ($session && $session.user) {
+			const response = await fetchUsersOwnDefinitionsPage(
+				{
+					pageSize: 5,
+					page: currentActivePage,
+					filter: { userId: $session.user.id }
+				},
+				$session.id_token
+			);
+			if (response.error) {
+				console.log(response.error);
+			} else {
+				definitions = response.data!;
+			}
+		}
+	}
+
+	(async () => {
+		await getPageCount();
+		await getDefinitions();
+	})();
 
 	function updateUser(object: UpdateProfileInput) {
 		if ($session === undefined) {
@@ -128,24 +119,11 @@
 			return;
 		}
 
-		let headers: HeadersInit = {
-			Authorization: `Bearer ${$session.access_token}`,
-			'Content-Type': 'application/json'
-		};
-
-		let response = $store.authorizerRef.updateProfile(
-			{
-				old_password: currentPassword,
-				new_password: newPassword,
-				confirm_new_password: newPasswordConfirmed
-			},
-			headers
-		);
-
-		// response.catch((error) => {
-		// 	console.log('error found');
-		// 	console.log(error);
-		// });
+		updateUser({
+			old_password: currentPassword,
+			new_password: newPassword,
+			confirm_new_password: newPasswordConfirmed
+		});
 
 		currentPassword = '';
 		newPassword = '';
@@ -202,6 +180,23 @@
 			lowercaseCriteriaMet &&
 			digitCriteriaMet &&
 			specialCharCriteriaMet;
+	}
+
+	async function changeDefinition() {
+		if ($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchChangeDefinition($session.id_token, {
+			id: '63b5529e3e09e73fea2c8c4f',
+			content: 'I change it to this is a good quote.',
+			category: 'artificial_intelligence'
+		});
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.message);
+		}
 	}
 
 	function deleteAccount() {
@@ -480,35 +475,53 @@
 								</tr>
 							</thead>
 							<tbody>
-								<!-- {#each submittedDefinitions as submittedDefinition}
+								{#each definitions as definition}
 									<tr
 										class="hover:active cursor-pointer"
 										on:click={() => alert('Now the modal should open to see details')}
 									>
-										<th>{submittedDefinitions.indexOf(submittedDefinition) + 1}</th>
+										<th>{definitions.indexOf(definition) + 1}</th>
 										<td
 											><p>
-												{submittedDefinition.content.substring(0, 50)}
-												{submittedDefinition.content.length >= 50 ? '...' : ''}
+												{definition.content.substring(0, 50)}
+												{definition.content.length >= 50 ? '...' : ''}
 											</p></td
 										>
-										<td>{submittedDefinition.submittedDate.toLocaleDateString()}</td>
+										<td>{definition.submittedDate.toLocaleDateString()}</td>
 										<td>
 											<p
-												class={`${
-													submittedDefinition.status?.status === 'approved' && 'text-success'
-												} ${submittedDefinition.status?.status === 'pending' && 'text-warning'} ${
-													submittedDefinition.status?.status === 'declined' && 'text-error'
-												}`}
+												class={`${definition.status === 'approved' && 'text-success'} ${
+													definition.status === 'pending' && 'text-warning'
+												} ${definition.status === 'declined' && 'text-error'}`}
 											>
-												{submittedDefinition.status?.status}
+												{definition.status}
 											</p>
-											Status
 										</td>
 									</tr>
-								{/each} -->
+								{/each}
 							</tbody>
 						</table>
+					</div>
+					<div class="btn-group flex justify-center items-center">
+						{#each Array(pageCount) as _, index (index)}
+							{#if index + 1 === currentActivePage}
+								<button
+									class="btn btn-secondary"
+									on:click={() => {
+										currentActivePage = index + 1;
+										getDefinitions();
+									}}>{index + 1}</button
+								>
+							{:else}
+								<button
+									class="btn"
+									on:click={() => {
+										currentActivePage = index + 1;
+										getDefinitions();
+									}}>{index + 1}</button
+								>
+							{/if}
+						{/each}
 					</div>
 				</div>
 			</div>

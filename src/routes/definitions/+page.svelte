@@ -4,162 +4,49 @@
 	import QuoteCard from '../../components/QuoteCard.svelte';
 	import { goto } from '$app/navigation';
 	import Icon from '$components/Icon.svelte';
-	import FilterBadge from '$components/FilterBadge.svelte';
-	import { Categories, type Category, type Definition, type SourceType } from '$types';
-	import { onMount } from 'svelte';
+	import { Categories, CategoryLabel, type Author, type Category, type Definition } from '$types';
 	import {
-		fetchApproveDefinition,
-		fetchChangeDefinition,
-		fetchDefinitionById,
 		fetchDefinitionsPage,
-		fetchDeleteDefinition,
 		fetchDefinitionPageCount,
-		fetchRejectDefinition,
-		fetchSubmitDefinition
+		type DefinitionFilter
 	} from '$api/definitions';
-	import { changeRoute } from '$utils';
-	import { session } from '$stores/session';
-	import {
-		fetchChangeSource,
-		fetchCreateSource,
-		fetchDeleteSource,
-		fetchSourceById,
-		fetchSourcePage,
-		fetchSourcePageCount,
-		type CreateSourceRequest
-	} from '$api/sources';
-	import { page } from '$app/stores';
+	import { changeRoute, getSingleAuthorDisplayName } from '$utils';
 
-	let pageCount: number = 0;
+	let definitionPageCount: number = 0;
+	let definitionCurrentActivePage: number = 1;
+
 	let definitions: Definition[] = [];
-	let filteredDefinitions: Definition[] = [];
-	let definitionId: string;
-
-	onMount(() => {
-		(async () => {
-			//await getPageCount();
-			//await submitDefinition();
-			await getDefinitions();
-			//await rejectDefinition();
-			//await changeDefinition();
-			//await approveDefinition();
-			//await deleteDefinition();
-			//console.log(definitions);
-			filteredDefinitions = [...definitions];
-			//console.log(definitionId);
-			//await deleteSource();
-			//await getSourceById();
-			//await createSource('journal');
-			//await getSourcePage();
-			//await getSourcePageCount();
-			//await changeSource();
-		})();
-	});
-
-	// for pagination logic (will be redundant if we send a new query for each page)
-	let maxDefinitionPerPage: number = 10;
-	let currentActivePage: number = 1;
-	let allPages: number[] = [];
-	let startIndex: number = 0;
-	let endIndex: number = maxDefinitionPerPage - 1;
+	let currentFilter: DefinitionFilter = { approved: true };
+	let filterIsSet: boolean =
+		currentFilter.authors || currentFilter.categories || currentFilter.content ? true : false;
 
 	let searchCriteria: string = '';
+	let authors: Author[] = [];
+	let selectedCategories: Category[] = [];
+	let selectedAuthors: Author[] = [];
 
-	let allAuthors: string[] = [
-		'Winston, P.H.',
-		'Quinston, Elizabeth',
-		'Freg, Thomas',
-		'Schmindt, Lucas',
-		'Kasik, Nikolai'
-	];
-
-	let selectedCategories: Category[] = [...Categories];
-	let selectedAuthors: string[] = [...allAuthors];
-
-	let filterIsSet: boolean = filteredDefinitions.length !== definitions.length;
-
-	function setCurrentActivePage(pageNumber: number) {
-		currentActivePage = pageNumber;
-		startIndex = maxDefinitionPerPage * currentActivePage - maxDefinitionPerPage;
-		endIndex = maxDefinitionPerPage * currentActivePage - 1;
-	}
-
-	function calculateAmountOfPages() {
-		allPages = [];
-		for (let i = 1; i <= Math.ceil(filteredDefinitions.length / maxDefinitionPerPage); i++) {
-			allPages.push(i);
-		}
-	}
-
-	function setSelectedCategories(selectedCategoriesParam: Category[]) {
-		selectedCategories = selectedCategoriesParam;
-		filterDefinitions();
-	}
-
-	function setSelectedAuthors(selectedAuthorsParam: string[]) {
-		selectedAuthors = selectedAuthorsParam;
-		filterDefinitions();
-	}
-
-	function filterDefinitions() {
-		// 	filteredDefinitions = [...definitions].filter(function (element) {
-		// 		return (
-		// 			element.content.includes(searchCriteria) &&
-		// 			selectedCategories.includes(element.category as Category) &&
-		// 			selectedAuthors.includes(element.author)
-		// 		);
-		// 	});
-		// 	filterIsSet = filteredDefinitions.length !== definitions.length;
-		// 	calculateAmountOfPages();
-	}
-
-	function removeSingleFilter(filterType: string, elementToRemove?: string) {
-		if (filterType === 'category') {
-			if (selectedCategories.length === 1) {
-				selectedCategories = [...Categories];
-			} else {
-				const index = selectedCategories.indexOf(elementToRemove! as Category);
-				if (index !== -1) {
-					selectedCategories.splice(index, 1);
-				}
-				selectedCategories = selectedCategories;
-			}
-		} else if (filterType === 'user') {
-			if (selectedAuthors.length === 1) {
-				selectedAuthors = [...allAuthors];
-			} else {
-				const index = selectedAuthors.indexOf(elementToRemove!);
-				if (index !== -1) {
-					selectedAuthors.splice(index, 1);
-				}
-				selectedAuthors = selectedAuthors;
-			}
-		}
-		filterDefinitions();
-	}
-
-	function removeAllFilters() {
-		selectedCategories = [...Categories];
-		selectedAuthors = [...allAuthors];
-		searchCriteria = '';
-		filterIsSet = false;
-		filteredDefinitions = [...definitions];
-	}
+	(async () => {
+		await getPageCount();
+		await getDefinitions();
+	})();
 
 	async function getPageCount() {
-		const response = await fetchDefinitionPageCount({ pageSize: 10 });
+		const response = await fetchDefinitionPageCount({
+			pageSize: 10,
+			filter: currentFilter
+		});
 		if (response.error) {
 			console.log(response.error);
 		} else {
-			pageCount = response.data!;
+			definitionPageCount = response.data!;
 		}
 	}
 
 	async function getDefinitions() {
 		const response = await fetchDefinitionsPage({
 			pageSize: 10,
-			page: 1,
-			filter: { approved: true }
+			page: definitionCurrentActivePage,
+			filter: currentFilter
 		});
 		if (response.error) {
 			console.log(response.error);
@@ -168,213 +55,62 @@
 		}
 	}
 
-	async function submitDefinition() {
-		if ($session === undefined) {
-			console.log('Session is undefined.');
-			return;
+	function setSelectedCategories(selectedCategoriesParam: Category[]) {
+		selectedCategories = selectedCategoriesParam;
+		if (selectedCategories.length !== 0) {
+			currentFilter = { ...currentFilter, categories: selectedCategories };
+		} else {
+			delete currentFilter.categories;
 		}
-		const response = await fetchSubmitDefinition($session.id_token, {
-			title: 'Test from frontend 2',
-			content: 'This is a test from the frontend 2.',
-			publishingDate: '2022-09-14T09:08:47.107Z',
-			category: 'artificial_intelligence',
-			sourceId: '63b54a203e09e73fea2c8c4b'
+		filterIsSet =
+			currentFilter.authors || currentFilter.categories || currentFilter.content ? true : false;
+		getPageCount();
+		getDefinitions();
+	}
+
+	function setSelectedAuthors(selectedAuthorsParam: Author[]) {
+		selectedAuthors = selectedAuthorsParam;
+
+		let selectedAuthorsIds: string[] = [];
+		selectedAuthors.forEach((author: Author) => {
+			selectedAuthorsIds.push(author.id);
 		});
-		if (response.error) {
-			console.log(response.error);
+		if (selectedAuthors.length !== 0) {
+			currentFilter = { ...currentFilter, authors: selectedAuthorsIds };
 		} else {
-			definitionId = response.data!;
+			delete currentFilter.authors;
 		}
+		filterIsSet =
+			currentFilter.authors || currentFilter.categories || currentFilter.content ? true : false;
+		getPageCount();
+		getDefinitions();
 	}
 
-	async function rejectDefinition() {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
-		const response = await fetchRejectDefinition($session.id_token, {
-			id: '63b5529e3e09e73fea2c8c4f',
-			content: 'wrong spelling'
-		});
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.message);
-		}
-	}
-
-	async function changeDefinition() {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
-		const response = await fetchChangeDefinition($session.id_token, {
-			id: '63b5529e3e09e73fea2c8c4f',
-			content: 'I change it to this is a good quote.',
-			category: 'artificial_intelligence'
-		});
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.message);
-		}
-	}
-
-	async function approveDefinition() {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
-		const response = await fetchApproveDefinition($session.id_token, '63b557ce3e09e73fea2c8c54');
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.message);
-		}
-	}
-
-	async function deleteDefinition() {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
-		const response = await fetchDeleteDefinition($session.id_token, '63b557ce3e09e73fea2c8c54');
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.message);
-		}
-	}
-
-	async function deleteSource() {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
-		const response = await fetchDeleteSource($session.id_token, '63c57ecc1bcda285138a60fc');
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.message);
-		}
-	}
-
-	async function getSourceById() {
-		const response = await fetchSourceById('63c5715f1bcda285138a60f9');
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.data);
-		}
-	}
-
-	async function createSource(testType: SourceType) {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
-
-		let requestObject: CreateSourceRequest;
-
-		if (testType === 'web') {
-			requestObject = {
-				type: testType,
-				authors: ['63c571231bcda285138a60f8'],
-				webProperties: {
-					articleName: 'Test',
-					url: 'https://www.scribbr.com/citing-sources/cite-a-book/',
-					websiteName: 'Scribbr',
-					accessDate: '2023-01-17T10:03:59.904+00:00',
-					publicationDate: '2023-01-17T10:03:59.904+00:00'
-				}
-			};
-		} else if (testType === 'book') {
-			requestObject = {
-				type: testType,
-				authors: ['63c571231bcda285138a60f8'],
-				bookProperties: {
-					title: 'Test',
-					publicationDate: '2023-01-17T10:03:59.904+00:00',
-					pagesFrom: 1,
-					pagesTo: 10,
-					edition: '2nd edition',
-					publisher: 'Wiley',
-					isbn: '978-3-12-732320-7'
-				}
-			};
-		} else {
-			requestObject = {
-				type: testType,
-				authors: ['63c571231bcda285138a60f8'],
-				journalProperties: {
-					title: 'Test',
-					publicationDate: '2023-01-17T10:03:59.904+00:00',
-					pagesFrom: 1,
-					pagesTo: 10,
-					journalName: 'Testjournal',
-					edition: '2nd edition',
-					publisher: 'Wiley',
-					doi: 'https://doi.org/10.1177/152700250000100304'
-				}
-			};
-		}
-
-		const response = await fetchCreateSource($session.id_token, requestObject!);
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.message);
-		}
-	}
-
-	async function getSourcePage() {
-		const response = await fetchSourcePage({
-			page: 1,
-			pageSize: 5
-		});
-
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.data);
-		}
-	}
-
-	async function getSourcePageCount() {
-		const response = await fetchSourcePageCount({ pageSize: 10 });
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.data);
-		}
-	}
-
-	async function changeSource() {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
-		const response = await fetchChangeSource($session.id_token, {
-			id: '63cfda8e725461311b33a299',
-			type: 'book',
-			bookProperties: {
-				title: 'bla',
-				publicationDate: '2020-11-30T00:00:00.000Z',
-				pagesFrom: 1,
-				pagesTo: 10,
-				edition: '2nd edition',
-				publisher: 'Wiley',
-				isbn: '978-3-12-732320-7'
+	function removeSingleFilter(filterType: string, elementToRemove?: string | Author) {
+		if (filterType === 'category') {
+			const index = selectedCategories.indexOf(elementToRemove! as Category);
+			if (index !== -1) {
+				selectedCategories.splice(index, 1);
 			}
-		});
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.message);
+			selectedCategories = selectedCategories;
+		} else if (filterType === 'user') {
+			let author: Author = elementToRemove as Author;
+			const index = selectedAuthors.findIndex(
+				(selectedAuthor: Author) => selectedAuthor.id === author.id
+			);
+			if (index !== -1) {
+				selectedAuthors.splice(index, 1);
+			}
+			selectedAuthors = selectedAuthors;
 		}
 	}
 
-	calculateAmountOfPages();
+	function removeAllFilters() {
+		selectedCategories = [];
+		selectedAuthors = [];
+		searchCriteria = '';
+		filterIsSet = false;
+	}
 </script>
 
 <main>
@@ -386,14 +122,28 @@
 				placeholder="🔍 Search for definition"
 				class="input w-full border-2 border-inherit hover:border-1"
 				bind:value={searchCriteria}
-				on:input={filterDefinitions}
+				on:input={() => {
+					if (searchCriteria) {
+						currentFilter = { ...currentFilter, content: searchCriteria };
+						getPageCount();
+						getDefinitions();
+					} else {
+						delete currentFilter.content;
+						getPageCount();
+						getDefinitions();
+					}
+					filterIsSet =
+						currentFilter.authors || currentFilter.categories || currentFilter.content
+							? true
+							: false;
+				}}
 			/>
 			<div class="flex flex-row gap-2 items-center justify-end w-full h-full">
 				<p class="text-base text-secondary font-semibold">
-					{filteredDefinitions.length} results
+					{definitions.length} results
 				</p>
 				<div class="dropdown dropdown-end">
-					<label tabindex="0" class="btn btn-outline rounded-full gap-2">
+					<label tabindex="0" class="btn btn-outline rounded-full gap-2" for="">
 						<Icon icon="sliders" color="#00000" />
 						<p class="hidden md:flex">All filters</p>
 					</label>
@@ -406,19 +156,18 @@
 							<!-- The button to open authors modal -->
 							<label for="authors-modal">Authors</label>
 						</li>
-						<li>
-							<!-- The button to open source modal -->
+						<!-- <li>
 							<label for="source-modal">Sources</label>
-						</li>
+						</li> -->
 					</ul>
 					<FilteringCategoryModal
-						allCategories={Categories}
+						categories={Categories}
 						{selectedCategories}
 						modalName="category-modal"
 						{setSelectedCategories}
 					/>
 					<FilteringAuthorModal
-						{allAuthors}
+						{authors}
 						{selectedAuthors}
 						modalName="authors-modal"
 						{setSelectedAuthors}
@@ -440,53 +189,60 @@
 				</button>
 			</div>
 		</div>
-
 		{#if filterIsSet}
 			<div class="flex gap-4 py-6 overflow-x-auto">
-				{#if selectedCategories.length !== Categories.length}
-					{#each selectedCategories as category}
-						<FilterBadge
-							filterType="category"
-							value={category}
-							removeFunction={removeSingleFilter}
-						/>
-					{/each}
-				{/if}
-				{#if selectedAuthors.length !== allAuthors.length}
-					{#each selectedAuthors as author}
-						<FilterBadge filterType="user" value={author} removeFunction={removeSingleFilter} />
-					{/each}
-				{/if}
+				{#each selectedCategories as category}
+					<div
+						class="flex justify-center items-center w-fit h-fit badge bg-secondary p-3 cursor-pointer"
+						on:click={() =>
+							setSelectedCategories(selectedCategories.filter((element) => element !== category))}
+					>
+						<p class="text-base font-semibold text-center">{CategoryLabel[category]} ❌</p>
+					</div>
+				{/each}
+				{#each selectedAuthors as author}
+					<div
+						class="flex justify-center items-center w-fit h-fit badge bg-secondary p-3 cursor-pointer"
+						on:click={() =>
+							setSelectedAuthors(selectedAuthors.filter((element) => element !== author))}
+					>
+						<p class="text-base font-semibold text-center">
+							{getSingleAuthorDisplayName(author)} ❌
+						</p>
+					</div>
+				{/each}
 				<div
 					class="flex justify-center items-center w-fit h-fit badge bg-secondary p-3 cursor-pointer"
 					on:click={removeAllFilters}
 				>
-					<p class="text-base font-semibold text-center">REMOVE ALL FILTERS ❌</p>
+					<p class="text-base font-semibold text-center">Remove all filters ❌</p>
 				</div>
 			</div>
 		{/if}
 
 		<div class="flex flex-col gap-8">
-			{#each filteredDefinitions as definition}
-				{#if filteredDefinitions.indexOf(definition) >= startIndex && filteredDefinitions.indexOf(definition) <= endIndex}
-					<QuoteCard
-						author=""
-						category={definition.category}
-						content={definition.content}
-						publishingDate={new Date()}
-						source=""
-					/>
-				{/if}
+			{#each definitions as definition}
+				<QuoteCard {definition} />
 			{/each}
 		</div>
 		<div class="btn-group flex justify-center items-center">
-			{#each allPages as page}
-				{#if page === currentActivePage}
-					<button class="btn btn-secondary" on:click={() => setCurrentActivePage(page)}
-						>{page}</button
+			{#each Array(definitionPageCount) as _, index (index)}
+				{#if index + 1 === definitionCurrentActivePage}
+					<button
+						class="btn btn-secondary"
+						on:click={() => {
+							definitionCurrentActivePage = index + 1;
+							getDefinitions();
+						}}>{index + 1}</button
 					>
 				{:else}
-					<button class="btn" on:click={() => setCurrentActivePage(page)}>{page}</button>
+					<button
+						class="btn"
+						on:click={() => {
+							definitionCurrentActivePage = index + 1;
+							getDefinitions();
+						}}>{index + 1}</button
+					>
 				{/if}
 			{/each}
 		</div>

@@ -19,7 +19,6 @@
 
 		mql.addEventListener('change', (e) => {
 			mobileView = mql.matches;
-			console.log(mobileView);
 		});
 	});
 </script>
