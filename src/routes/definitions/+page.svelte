@@ -111,6 +111,26 @@
 		searchCriteria = '';
 		filterIsSet = false;
 	}
+
+	function convertToCSV(definitionsToExport: Definition[]): string {
+		//console.log(definitionsToExport);
+
+		var array  =typeof definitionsToExport != 'object' ? JSON.parse(definitionsToExport) : definitionsToExport;
+		var str = 'sep=|\r\nID|submittedBy|submittedByName|submittedByDate|Definition|Source|Category\r\n';
+		
+		for (var i = 0; i<array.length; i++) {
+			var line = '';
+			for (var index in array[i]) {
+				if (line != '') line += '|'
+
+				line += array[i][index];
+                }
+
+                str += line + '\r\n';
+		}
+		return str;
+	
+	}
 </script>
 
 <main>
@@ -179,8 +199,8 @@
 						<span class="hidden md:flex">Export</span>
 					</label>
 					<ul tabindex="0" class="dropdown-content menu shadow bg-base-100 rounded-box w-52">
-						<li><button>Excel</button></li>
-						<li><button>JSON</button></li>
+						<li><a href={"data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(definitions, null, 2))} download={"JSON-Export"+".json"}>JSON</a></li>
+						<li><a href={"data:text/json;charset=utf-8," + encodeURIComponent(convertToCSV(definitions))} download={"Excel-Export"+".csv"}>Excel</a></li>
 					</ul>
 				</div>
 				<button class="btn gap-1" on:click={() => changeRoute(goto, 'definitions/addDef')}>
