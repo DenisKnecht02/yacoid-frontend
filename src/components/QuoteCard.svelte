@@ -1,24 +1,31 @@
 <script lang="ts">
-	import { CategoryLabel, type Category } from '$types';
+	import {
+		CategoryLabel,
+		getAuthorsDisplayNames,
+		getDefinitionPublishingDate,
+		getSourceDisplayName,
+		type Definition
+	} from '$types';
 
-	export let category: Category;
-	export let content: string = '';
-	export let author: string = '';
-	export let publishingDate: Date;
-	export let source: string = '';
+	export let definition: Definition;
 </script>
 
 <div class="card w-[1/4] bg-base-100 shadow-xl">
 	<div class="card-body">
 		<div class="flex justify-between h-12 items-center">
-			<div class="badge badge-secondary text-base w-fit h-fit">{CategoryLabel[category]}</div>
+			<div class="badge badge-secondary text-base w-fit h-fit">
+				{CategoryLabel[definition.category]}
+			</div>
 		</div>
-		<p class="flex italic text-xl text-justify items-center">"{content}"</p>
+		<p class="flex italic text-xl text-justify items-center">"{definition.content}"</p>
 		<div>
-			<p class="flex justify-end items-end font-bold">
-				- {author} ({publishingDate.toLocaleDateString()})
+			<p class="flex justify-end text-end font-bold">
+				- {getAuthorsDisplayNames(...definition.source.authors).join('; ')}
+				({getDefinitionPublishingDate(definition)?.toLocaleDateString()})
 			</p>
-			<p class="flex justify-end items-end italic">from: {source}</p>
+			<p class="flex justify-end text-end break-all italic">
+				from: {getSourceDisplayName(definition.source)}
+			</p>
 		</div>
 	</div>
 </div>

@@ -1,71 +1,26 @@
 <script lang="ts">
-	import Icon from '$components/Icon.svelte';
+	import type { GenericResponse } from '$api/api';
 	import {
+		fetchAuthorById,
+		fetchAuthorPage,
+		fetchAuthorPageCount,
+		fetchCreateAuthor,
+		type AuthorFilter
+	} from '$api/authors';
+	import Icon from '$components/Icon.svelte';
+	import { session } from '$stores/session';
+	import {
+		AuthorTypes,
 		Categories,
 		CategoryLabel,
 		type Author,
 		type AuthorType,
-		type OrganizationAuthor,
-		type PersonAuthor,
-		type Source,
-		type SourceType,
-		type WebProperties
+		type SourceType
 	} from '$types';
+	import { getSingleAuthorDisplayName } from '$utils';
 
-	let suggestedAuthors: Author[] = [
-		{
-			id: '1',
-			slugId: 'winston-1',
-			submittedBy: 'user',
-			submittedDate: new Date('2022-11-04'),
-			type: 'person',
-			submittedByName: "Phillip",
-			firstName: 'Phillip Hans',
-			lastName: 'Winston'
-		},
-		{
-			id: '2',
-			slugId: 'quinston-2',
-			submittedBy: 'user',
-			submittedDate: new Date('2022-11-05'),
-			type: 'person',
-			submittedByName: "Phillip",
-			firstName: 'Elizabeth',
-			lastName: 'Quinston'
-		},
-		{
-			id: '3',
-			slugId: 'freg-1',
-			submittedBy: 'user',
-			submittedDate: new Date('2022-11-08'),
-			type: 'person',
-			submittedByName: "Phillip",
-			firstName: 'Thomas',
-			lastName: 'Freg'
-		},
-		{
-			id: '4',
-			slugId: 'schmindt-4',
-			submittedBy: 'user',
-			submittedDate: new Date('2022-11-03'),
-			type: 'person',
-			submittedByName: "Phillip",
-			firstName: 'Lucas',
-			lastName: 'Schmindt'
-		},
-		{
-			id: '5',
-			slugId: 'kasik-5',
-			submittedBy: 'user',
-			submittedDate: new Date('2022-11-12'),
-			type: 'person',
-			submittedByName: "Phillip",
-			firstName: 'Nikolai',
-			lastName: 'Kasik'
-		}
-	];
-
-	let allSelectedAuthors: Author[] = [];
+	let suggestedAuthors: Author[] = [];
+	let selectedAuthors: Author[] = [];
 
 	let authorSearchCriteria: string = '';
 	let authorType: AuthorType = 'person';
@@ -105,92 +60,128 @@
 	let webAccessDate: Date;
 	let webPublicationDate: Date;
 
-	function createNewAuthor(idParam: string, type: AuthorType) {
-		if (type === 'person') {
-			let newAuthor: Author = {
-				id: idParam,
-				slugId: authorLastName.toLowerCase() + '-' + idParam,
-				submittedBy: 'user',
-				submittedDate: new Date(),
-				type: 'person',
-				submittedByName: "Phillip",
-				firstName: authorFirstName,
-				lastName: authorLastName
-			};
-			addSelectedAuthor(newAuthor);
-			allSelectedAuthors = allSelectedAuthors;
-			authorFirstName = '';
-			authorLastName = '';
-			authorOrganizationName = '';
+	let authorPageCount: number = 0;
+	let authorCurrentActivePage: number = 1;
+	let currentFilter: AuthorFilter = {};
+
+	(async () => {
+		await getPageCount();
+		await getAuthors();
+	})();
+
+	async function getPageCount() {
+		const response = await fetchAuthorPageCount({
+			pageSize: 5,
+			filter: currentFilter
+		});
+		if (response.error) {
+			console.log(response.error);
 		} else {
-			// do the same for organizational authors
-			let newAuthor: Author = {
-				id: idParam,
-				slugId: authorLastName.toLowerCase() + '-' + idParam,
-				submittedBy: 'user',
-				submittedDate: new Date(),
-				submittedByName: "Phillip",
-				type: 'organization',
-				organizationName: authorOrganizationName
-			};
-			addSelectedAuthor(newAuthor);
-			allSelectedAuthors = allSelectedAuthors;
+			authorPageCount = response.data!;
+		}
+	}
+
+	async function getAuthors() {
+		const response = await fetchAuthorPage({
+			pageSize: 5,
+			page: authorCurrentActivePage,
+			filter: currentFilter
+		});
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			suggestedAuthors = response.data!;
+		}
+	}
+
+	async function createAuthor() {
+		if ($session !== undefined) {
+			let response;
+			if (authorType === 'person') {
+				response = await fetchCreateAuthor($session.id_token, {
+					type: authorType,
+					personProperties: {
+						firstName: authorFirstName,
+						lastName: authorLastName
+					}
+				});
+			} else if (authorType === 'organization') {
+				response = await fetchCreateAuthor($session.id_token, {
+					type: authorType,
+					organizationProperties: {
+						organizationName: authorOrganizationName
+					}
+				});
+			}
+			if (response) {
+				if (response.error) {
+					console.log(response.error);
+				} else {
+					// after having created a new author successfully, fetch again all authors and get
+					getPageCount();
+					getAuthors();
+					// get the details of the created author and add it to the selected list of authors
+					// response.data contains the id of the newly created author
+					let fetchedAuthor: Author = await getAuthorById(response.data!);
+					addSelectedAuthor(fetchedAuthor);
+				}
+			}
 			authorFirstName = '';
 			authorLastName = '';
 			authorOrganizationName = '';
 		}
+	}
+
+	// get an author by id and return it
+	async function getAuthorById(id: string): Promise<Author> {
+		const response = await fetchAuthorById(id);
+		let fetchedAuthor: Author;
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			fetchedAuthor = response.data!;
+		}
+		return new Promise<Author>((resolve) => {
+			resolve(fetchedAuthor);
+		});
 	}
 
 	function addSelectedAuthor(author: Author) {
-		if (!allSelectedAuthors.includes(author)) {
-			allSelectedAuthors.push(author);
+		if (!selectedAuthors.includes(author)) {
+			selectedAuthors.push(author);
 		}
-		allSelectedAuthors = allSelectedAuthors;
+		selectedAuthors = selectedAuthors;
 	}
 
 	function removeSelectedAuthor(author: Author) {
-		if (allSelectedAuthors.includes(author)) {
-			const index = allSelectedAuthors.indexOf(author);
+		if (selectedAuthors.includes(author)) {
+			const index = selectedAuthors.indexOf(author);
 
 			if (index !== -1) {
-				allSelectedAuthors.splice(index, 1);
+				selectedAuthors.splice(index, 1);
 			}
 		}
-		allSelectedAuthors = allSelectedAuthors;
+		selectedAuthors = selectedAuthors;
 	}
 
-	function getAuthorDisplayName(authorParam: Author): string {
-		let authorDisplayName: string = '';
-		if (authorParam.type === 'person') {
-			let personAuthor: PersonAuthor = authorParam as PersonAuthor;
-			authorDisplayName = personAuthor.lastName + ', ' + personAuthor.firstName;
-		} else {
-			let organizationAuthor: OrganizationAuthor = authorParam as OrganizationAuthor;
-			authorDisplayName = organizationAuthor.organizationName;
-		}
-
-		return authorDisplayName;
-	}
-
-	function checkAuthorCriteria(suggestedAuthorParam: Author): boolean {
-		let authorCriteriaIncluded: boolean = false;
-		if (suggestedAuthorParam.type === 'person') {
-			let personAuthor: PersonAuthor = suggestedAuthorParam as PersonAuthor;
-			if (
-				personAuthor.firstName.toLowerCase().includes(authorSearchCriteria) ||
-				personAuthor.lastName.toLowerCase().includes(authorSearchCriteria)
-			) {
-				authorCriteriaIncluded = true;
-			}
-		} else {
-			let organizationAuthor: OrganizationAuthor = suggestedAuthorParam as OrganizationAuthor;
-			if (organizationAuthor.organizationName.toLowerCase().includes(authorSearchCriteria)) {
-				authorCriteriaIncluded = true;
-			}
-		}
-
-		return authorCriteriaIncluded;
-	}
+	// async function submitDefinition() {
+	// 	if ($session === undefined) {
+	// 		console.log('Session is undefined.');
+	// 		return;
+	// 	}
+	// 	const response = await fetchSubmitDefinition($session.id_token, {
+	// 		title: 'Test from frontend 2',
+	// 		content: 'This is a test from the frontend 2.',
+	// 		publishingDate: '2022-09-14T09:08:47.107Z',
+	// 		category: 'artificial_intelligence',
+	// 		sourceId: '63b54a203e09e73fea2c8c4b'
+	// 	});
+	// 	if (response.error) {
+	// 		console.log(response.error);
+	// 	} else {
+	// 		definitionId = response.data!;
+	// 	}
+	// }
 </script>
 
 <main>
@@ -212,6 +203,17 @@
 										placeholder="Author name..."
 										class="input input-bordered w-full"
 										bind:value={authorSearchCriteria}
+										on:input={() => {
+											if (authorSearchCriteria) {
+												// when the user wants to search for specific authors, the filter will be set by using firstName
+												// however, in the backend a fuzzy search is performed on all three name types (firstName, lastName, organizationName)
+												currentFilter = { firstName: authorSearchCriteria };
+												getAuthors();
+											} else {
+												delete currentFilter.firstName;
+												getAuthors();
+											}
+										}}
 									/>
 								</label>
 								<ul
@@ -219,18 +221,16 @@
 									class="dropdown-content w-full menu shadow bg-base-100 rounded-b-lg"
 								>
 									{#each suggestedAuthors as suggestedAuthor}
-										{#if checkAuthorCriteria(suggestedAuthor)}
-											<li>
-												<div
-													class="flex items-center justify-between"
-													on:click={() => addSelectedAuthor(suggestedAuthor)}
-												>
-													<p class="text-base">
-														{getAuthorDisplayName(suggestedAuthor)}
-													</p>
-												</div>
-											</li>
-										{/if}
+										<li>
+											<div
+												class="flex items-center justify-between"
+												on:click={() => addSelectedAuthor(suggestedAuthor)}
+											>
+												<p class="text-base">
+													{getSingleAuthorDisplayName(suggestedAuthor)}
+												</p>
+											</div>
+										</li>
 									{/each}
 								</ul>
 							</div>
@@ -250,8 +250,9 @@
 										<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 											<p class="text-base md:text-lg font-medium">Choose author type:</p>
 											<select class="select w-full max-w-xs" bind:value={authorType}>
-												<option>person</option>
-												<option>organization</option>
+												{#each AuthorTypes as authorType}
+													<option>{authorType}</option>
+												{/each}
 											</select>
 											{#if authorType === 'person'}
 												<p class="text-base md:text-lg font-medium">First name:</p>
@@ -285,20 +286,20 @@
 												(authorFirstName === '' || authorLastName === '')) ||
 											(authorType === 'organization' && authorOrganizationName === '')
 												? () => alert('Missing information, author creation failed.')
-												: () => createNewAuthor('100', authorType)}>Create</label
+												: () => createAuthor()}>Create</label
 										>
 									</div>
 								</label>
 							</label>
 						</div>
-						{#if allSelectedAuthors.length !== 0}
+						{#if selectedAuthors.length !== 0}
 							<div class="flex w-full h-full overflow-x-auto overflow-y-hidden items-center gap-1">
-								{#each allSelectedAuthors as selectedAuthor}
+								{#each selectedAuthors as selectedAuthor}
 									<div
 										class="badge min-w-[12rem] w-fit h-fit p-2 cursor-pointer"
 										on:click={() => removeSelectedAuthor(selectedAuthor)}
 									>
-										{getAuthorDisplayName(selectedAuthor)} ❌
+										{getSingleAuthorDisplayName(selectedAuthor)} ❌
 									</div>
 								{/each}
 							</div>
@@ -308,7 +309,7 @@
 				<div
 					class="form-control grid grid-cols-1 md:grid-cols-3 items-start gap-0 md:gap-4 md:px-8"
 				>
-					<label class="label">
+					<label class="label" for="">
 						<span class="font-semibold text-xl">Source</span>
 					</label>
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 items-center col-span-2">
@@ -326,30 +327,36 @@
 								bind:value={bookTitle}
 								required
 							/>
-							<p class="text-base font-medium">Publication Date:</p>
+							<div class="flex gap-2 w-fit items-center">
+								<p class="text-base font-medium">Publication Date:</p>
+								<p class="text-sm font-medium text-slate-400 italic">optional</p>
+							</div>
 							<input
 								type="date"
 								class="input input-bordered w-full"
 								bind:value={bookPublicationDate}
-								required
 							/>
-							<p class="text-base font-medium">Starting Page:</p>
+							<div class="flex gap-2 w-fit items-center">
+								<p class="text-base font-medium">Starting Page:</p>
+								<p class="text-sm font-medium text-slate-400 italic">optional</p>
+							</div>
 							<input
 								type="number"
 								class="input input-bordered w-full"
 								min="1"
 								max="10000"
 								bind:value={bookPagesFrom}
-								required
 							/>
-							<p class="text-base font-medium">Ending Page:</p>
+							<div class="flex gap-2 w-fit items-center">
+								<p class="text-base font-medium">Ending Page:</p>
+								<p class="text-sm font-medium text-slate-400 italic">optional</p>
+							</div>
 							<input
 								type="number"
 								class="input input-bordered w-full"
 								min="1"
 								max="10000"
 								bind:value={bookPagesTo}
-								required
 							/>
 							<div class="flex gap-2 w-fit items-center">
 								<p class="text-base font-medium">Publication Place:</p>
@@ -400,30 +407,36 @@
 								bind:value={journalArticleName}
 								required
 							/>
-							<p class="text-base font-medium">Publication Date:</p>
+							<div class="flex gap-2 w-fit items-center">
+								<p class="text-base font-medium">Publication Date:</p>
+								<p class="text-sm font-medium text-slate-400 italic">optional</p>
+							</div>
 							<input
 								type="date"
 								class="input input-bordered w-full"
 								bind:value={journalPublicationDate}
-								required
 							/>
-							<p class="text-base font-medium">Starting Page:</p>
+							<div class="flex gap-2 w-fit items-center">
+								<p class="text-base font-medium">Starting Page:</p>
+								<p class="text-sm font-medium text-slate-400 italic">optional</p>
+							</div>
 							<input
 								type="number"
 								class="input input-bordered w-full"
 								min="1"
 								max="10000"
 								bind:value={journalPagesFrom}
-								required
 							/>
-							<p class="text-base font-medium">Ending Page:</p>
+							<div class="flex gap-2 w-fit items-center">
+								<p class="text-base font-medium">Ending Page:</p>
+								<p class="text-sm font-medium text-slate-400 italic">optional</p>
+							</div>
 							<input
 								type="number"
 								class="input input-bordered w-full"
 								min="1"
 								max="10000"
 								bind:value={journalPagesTo}
-								required
 							/>
 							<div class="flex gap-2 w-fit items-center">
 								<p class="text-base font-medium">Publication Place:</p>
@@ -491,19 +504,19 @@
 					</div>
 				</div>
 				<div class="form-control grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-4 md:px-8">
-					<label class="label">
+					<label class="label" for="">
 						<span class="font-semibold text-xl">Category</span>
 					</label>
 					<select class="select w-full border border-gray-300">
 						{#each Categories as category}
-							<option>{CategoryLabel[category]}</option>
+							<option value={category}>{CategoryLabel[category]}</option>
 						{/each}
 					</select>
 				</div>
 				<div
 					class="form-control grid grid-cols-1 md:grid-cols-3 items-start gap-0 md:gap-4 md:px-8"
 				>
-					<label class="label">
+					<label class="label" for="">
 						<span class="font-semibold text-xl">Definition</span>
 					</label>
 					<textarea
@@ -516,9 +529,9 @@
 				<div class="flex justify-end w-full gap-4 mt-6 md:px-8">
 					<input
 						type="submit"
-						class=" btn btn-primary w-1/5"
+						class="btn btn-primary w-1/5"
 						value="Submit"
-						disabled={allSelectedAuthors.length === 0}
+						disabled={selectedAuthors.length === 0}
 					/>
 				</div>
 			</form>

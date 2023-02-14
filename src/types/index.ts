@@ -12,6 +12,21 @@ export function convertArray<U, V>(array: U[], converter: (item: U) => V): V[] {
 	return convertedArray;
 }
 
+/*
+	There is always a FetchedXXX and XXX type (e.g., FetchedDefinition and Definition). The XXX type is used for the frontend and the FetchedXXX type
+	is the one that comes back from the backend. They only differ in one single point. Regarding the FetchedXXX type, the dates are strings 
+	whereas the dates of the XXX type are really of type Date. Using the convertArray function, one can convert the FetchedXXX type to the XXX type.
+*/
+
+export type Statistics = {
+	definitionCount: number;
+	definitionCountInCurrentQuarter: number;
+	sourceCount: number;
+	sourceCountInCurrentQuarter: number;
+	authorCount: number;
+	authorCountInCurrentQuarter: number;
+};
+
 export type FetchedSource = {
 	id: string;
 	submittedBy: string;
@@ -123,6 +138,12 @@ export type Rejection = {
 	content: string;
 };
 
+/*
+	Difference between Definition and UserDefinition types:
+		In addition to the Definition properties, the UserDefinition includes the recjection log and status of a definition as it will be used
+		for the profile page where it's necessary to have these information.
+*/
+
 export type FetchedDefinition = {
 	id: string;
 	category: Category;
@@ -168,6 +189,7 @@ export type UserDefinition = {
 };
 
 export type AuthorType = 'person' | 'organization';
+export const AuthorTypes: AuthorType[] = ['person', 'organization'];
 
 export type FetchedAuthor = {
 	id: string;
@@ -191,20 +213,79 @@ export type AuthorProps = {
 	type: AuthorType;
 };
 
-export function getDisplayName(author: Author): string {
-	let displayName: string;
+export function getAuthorsDisplayNames(...authors: Author[]): string[] {
+	let displayNames: string[] = [];
 
-	if (author.type === 'person') {
-		let personAuthor: PersonAuthor = author as PersonAuthor;
-		displayName = `${personAuthor.lastName}, ${personAuthor.firstName}`;
-	} else if (author.type === 'organization') {
-		let organizationAuthor: OrganizationAuthor = author as OrganizationAuthor;
-		displayName = organizationAuthor.organizationName;
-	} else {
-		displayName = 'Author type is invalid.';
+	authors.forEach((author: Author) => {
+		if (author.type === 'person') {
+			let personAuthor: PersonAuthor = author as PersonAuthor;
+			displayNames.push(`${personAuthor.lastName}, ${personAuthor.firstName}`);
+		} else if (author.type === 'organization') {
+			let organizationAuthor: OrganizationAuthor = author as OrganizationAuthor;
+			displayNames.push(organizationAuthor.organizationName);
+		}
+	});
+
+	return displayNames;
+}
+
+export function getDefinitionPublishingDate(definition: Definition): Date | undefined {
+	let publishingDate: Date | undefined;
+
+	if (definition.source.type === 'book') {
+		let bookSource: BookSource = definition.source as BookSource;
+		publishingDate = bookSource.publicationDate;
+	} else if (definition.source.type === 'journal') {
+		let journalSource: JournalSource = definition.source as JournalSource;
+		publishingDate = journalSource.publicationDate;
+	} else if (definition.source.type === 'web') {
+		let webSource: WebSource = definition.source as WebSource;
+		publishingDate = webSource.publicationDate;
 	}
 
-	return displayName;
+	return publishingDate;
+}
+
+export function getSourceDisplayName(source: Source): string {
+	let displayParts: string[] = [];
+
+	if (source.type === 'book') {
+		let bookSource: BookSource = source as BookSource;
+		displayParts.push(bookSource.title);
+		if (bookSource.pagesFrom) {
+			if (bookSource.pagesTo) {
+				displayParts.push(`p. ${bookSource.pagesFrom}-${bookSource.pagesTo}`);
+			} else {
+				displayParts.push(`p. ${bookSource.pagesFrom.toString()}`);
+			}
+		}
+		if (bookSource.edition) displayParts.push(bookSource.edition);
+		if (bookSource.publicationPlace) displayParts.push(bookSource.publicationPlace);
+		if (bookSource.publisher) displayParts.push(bookSource.publisher);
+	} else if (source.type === 'journal') {
+		let journalSource: JournalSource = source as JournalSource;
+		displayParts.push(journalSource.title, journalSource.journalName);
+		if (journalSource.pagesFrom) {
+			if (journalSource.pagesTo) {
+				displayParts.push(`p. ${journalSource.pagesFrom}-${journalSource.pagesTo}`);
+			} else {
+				displayParts.push(`p. ${journalSource.pagesFrom.toString()}`);
+			}
+		}
+		if (journalSource.edition) displayParts.push(journalSource.edition);
+		if (journalSource.publicationPlace) displayParts.push(journalSource.publicationPlace);
+		if (journalSource.publisher) displayParts.push(journalSource.publisher);
+	} else if (source.type === 'web') {
+		let webSource: WebSource = source as WebSource;
+		displayParts.push(
+			webSource.articleName,
+			webSource.websiteName,
+			webSource.url,
+			webSource.accessDate.toLocaleDateString()
+		);
+	}
+
+	return displayParts.join(', ');
 }
 
 export type PersonAuthorProps = {

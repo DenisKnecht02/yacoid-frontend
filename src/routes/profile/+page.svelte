@@ -8,17 +8,25 @@
 	import type { AuthorizerState } from '@authorizerdev/authorizer-svelte/types';
 	import { getContext } from 'svelte';
 	import { changeRoute } from '$utils';
+	import type { UpdateProfileInput } from '@authorizerdev/authorizer-js';
+	import {
+		fetchChangeDefinition,
+		fetchDefinitionPageCount,
+		fetchUsersOwnDefinitionsPage
+	} from '$api/definitions';
 
 	const store: Writable<AuthorizerState> = getContext('authorizerContext');
+
+	let pageCount: number = 0;
+	let definitions: UserDefinition[] = [];
+	let currentActivePage: number = 1;
 
 	let nicknameEditable: boolean = false;
 	let newNickname: string = '';
 
 	let eMailEditable: boolean = false;
 	let newEMail: string = '';
-	let currentEMail: string = 'kala@gmail.com';
 
-	let userPassword: string = 'Yacoid123!'; /*user.password*/
 	let currentPassword: string = '';
 	let newPassword: string = '';
 	let newPasswordConfirmed: string = '';
@@ -31,81 +39,64 @@
 	let allPasswordCriteriaMet: boolean = false;
 	let showPassword: boolean = false;
 
-	// let submittedDefinitions: UserDefinition[] = [
-	// 	{
-	// 		id: '1',
-	// 		category: 'human_intelligence',
-	// 		content:
-	// 			'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
-	// 		source: {
-	// 			id: '1',
-	// 			authors: [
-	// 				{
-	// 					id: '1',
-	// 					firstName: 'Bertrand',
-	// 					lastName: 'Dieter',
-	// 					submittedByName: "Marten K.",
-	// 					type: 'person',
-	// 					slugId: 'bertrand-dieter-1',
-	// 					submittedBy: 'Dr. Bert',
-	// 					submittedDate: new Date('2023-01-01')
-	// 				}
-	// 			],
-	// 			type: 'book',
-	// 			submittedBy: 'Dr. Bert',
-	// 			submittedDate: new Date('2023-01-01')
-	// 		},
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedDate: new Date('2022-11-21'),
-	// 		rejectionLog: []
-	// 	},
-	// 	{
-	// 		id: '2',
-	// 		category: 'artificial_intelligence',
-	// 		content:
-	// 			'Artificial Intelligence is a subfield of computer science dealing with topics like Machine Learning.',
-	// 		source: {
-	// 			id: '2',
-	// 			authors: [
-	// 				{
-	// 					id: '1',
-	// 					firstName: 'Bertrand',
-	// 					lastName: 'Dieter',
-	// 					type: 'person',
-	// 					slugId: 'bertrand-dieter-1',
-	// 					submittedBy: 'Dr. Bert',
-	// 					submittedByName: "Dr: Bert",
-	// 					submittedDate: new Date('2023-01-01')
-	// 				}
-	// 			],
-	// 			type: 'web',
-	// 			submittedBy: 'Dr. Bert',
-	// 			submittedDate: new Date('2023-01-01'),
-	// 			publishingDate: new Date('2021-12-10')
-	// 		},
-	// 		submittedBy: 'Dr. Bert',
-	// 		submittedDate: new Date('2022-11-21'),
-	// 		rejectionLog: []
-	// 	}
-	// ];
+	async function getPageCount() {
+		if ($session && $session.user) {
+			const response = await fetchDefinitionPageCount(
+				{
+					pageSize: 5,
+					filter: { userId: $session.user.id }
+				},
+				$session.id_token
+			);
+			if (response.error) {
+				console.log(response.error);
+			} else {
+				pageCount = response.data!;
+			}
+		}
+	}
 
-	function changeNickname() {
+	async function getDefinitions() {
+		if ($session && $session.user) {
+			const response = await fetchUsersOwnDefinitionsPage(
+				{
+					pageSize: 5,
+					page: currentActivePage,
+					filter: { userId: $session.user.id }
+				},
+				$session.id_token
+			);
+			if (response.error) {
+				console.log(response.error);
+			} else {
+				definitions = response.data!;
+			}
+		}
+	}
+
+	(async () => {
+		await getPageCount();
+		await getDefinitions();
+	})();
+
+	function updateUser(object: UpdateProfileInput) {
 		if ($session === undefined) {
 			console.log('Session is undefined.');
 			return;
 		}
-		console.log($session.id_token);
+
 		let headers: HeadersInit = {
-			Authorization: `Bearer ${$session.id_token}`,
+			Authorization: `Bearer ${$session.access_token}`,
 			'Content-Type': 'application/json'
 		};
 
-		$store.authorizerRef.updateProfile(
-			{
-				nickname: newNickname
-			},
-			headers
-		);
+		$store.authorizerRef.updateProfile(object, headers);
+		Object.keys(object).forEach((keyString) => {
+			if ($store.user) {
+				//@ts-ignore
+				$store.user[keyString] = object[keyString];
+			}
+		});
 	}
 
 	function checkAndSetMail() {
@@ -113,33 +104,30 @@
 			/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 		);
 		if (regex.test(newEMail)) {
-			currentEMail = newEMail;
-			console.log(currentEMail);
+			updateUser({
+				email: newEMail
+			});
 		} else {
 			newEMail = '';
 			alert('Invalid EMail adress.');
 		}
 	}
 
-	function setNewPassword() {
-		if (currentPassword === userPassword) {
-			if (allPasswordCriteriaMet) {
-				if (newPassword === newPasswordConfirmed) {
-					userPassword = newPassword;
-					currentPassword = '';
-					newPassword = '';
-					newPasswordConfirmed = '';
-					console.log(userPassword);
-					goto('/profiles/private');
-				} else {
-					alert('New password and confirmed password are not the same!');
-				}
-			} else {
-				alert('New password doesn´t meet all necessary criteria!');
-			}
-		} else {
-			alert('Current password is wrong!');
+	function changePassword() {
+		if ($session === undefined) {
+			console.log('Session is undefined.');
+			return;
 		}
+
+		updateUser({
+			old_password: currentPassword,
+			new_password: newPassword,
+			confirm_new_password: newPasswordConfirmed
+		});
+
+		currentPassword = '';
+		newPassword = '';
+		newPasswordConfirmed = '';
 	}
 
 	function setPasswordFocused() {
@@ -151,7 +139,7 @@
 	}
 
 	function checkPassword() {
-		let lengthCriteriaRegex = new RegExp('(?=.{8,})');
+		let lengthCriteriaRegex = new RegExp('(?=.{6,})');
 		let uppercaseCriteriaRegex = new RegExp('(?=.*[A-Z])');
 		let lowercaseCriteriaRegex = new RegExp('(?=.*[a-z])');
 		let digitCriteriaRegex = new RegExp('(?=.*[0-9])');
@@ -194,6 +182,23 @@
 			specialCharCriteriaMet;
 	}
 
+	async function changeDefinition() {
+		if ($session === undefined) {
+			console.log('Session is undefined');
+			return;
+		}
+		const response = await fetchChangeDefinition($session.id_token, {
+			id: '63b5529e3e09e73fea2c8c4f',
+			content: 'I change it to this is a good quote.',
+			category: 'artificial_intelligence'
+		});
+		if (response.error) {
+			console.log(response.error);
+		} else {
+			console.log(response.message);
+		}
+	}
+
 	function deleteAccount() {
 		alert('Account deleted');
 	}
@@ -217,7 +222,9 @@
 					</h1>
 					<button
 						on:click={() => {
-							changeNickname();
+							updateUser({
+								nickname: newNickname
+							});
 							nicknameEditable = !nicknameEditable;
 						}}><Icon icon="save" color="#000000" strokeWidth="1.5" /></button
 					>
@@ -232,6 +239,7 @@
 					</h1>
 					<button
 						on:click={() => {
+							newNickname = $store.user?.nickname ?? '';
 							nicknameEditable = !nicknameEditable;
 						}}><Icon icon="edit" color="#000000" strokeWidth="1.5" /></button
 					>
@@ -263,11 +271,12 @@
 							<div class="flex gap-3">
 								<div>
 									<h1 class="text-lg md:text-xl bg-secondary p-3 rounded-xl text-white">
-										{currentEMail}
+										{$store.user?.email}
 									</h1>
 								</div>
 								<button
 									on:click={() => {
+										newEMail = $store.user?.email ?? '';
 										eMailEditable = !eMailEditable;
 									}}><Icon icon="edit" color="#000000" strokeWidth="1.5" /></button
 								>
@@ -331,9 +340,9 @@
 												<li>
 													<div class="flex gap-1">
 														{#if lengthCriteriaMet}
-															<p class="text-green-600">✔️ min. 8 characters long</p>
+															<p class="text-green-600">✔️ min. 6 characters long</p>
 														{:else}
-															<p class="text-red-600">❌ min. 8 characters long</p>
+															<p class="text-red-600">❌ min. 6 characters long</p>
 														{/if}
 													</div>
 												</li>
@@ -395,7 +404,7 @@
 										/>
 									{/if}
 								</div>
-								{#if currentPassword === '' || newPassword === '' || newPasswordConfirmed === ''}
+								{#if currentPassword === '' || newPassword === '' || newPasswordConfirmed === '' || !allPasswordCriteriaMet || newPassword !== newPasswordConfirmed}
 									<button class="btn btn-primary btn-disabled place-self-end"
 										>Change password
 									</button>
@@ -409,7 +418,7 @@
 										modalName="passwordModal"
 										modalTitle="Change password"
 										modalContent="Do you really want to change your password? This step can not be undone."
-										callbackFunction={setNewPassword}
+										callbackFunction={changePassword}
 									/>
 								{/if}
 							</div>
@@ -466,35 +475,53 @@
 								</tr>
 							</thead>
 							<tbody>
-								<!-- {#each submittedDefinitions as submittedDefinition}
+								{#each definitions as definition}
 									<tr
 										class="hover:active cursor-pointer"
 										on:click={() => alert('Now the modal should open to see details')}
 									>
-										<th>{submittedDefinitions.indexOf(submittedDefinition) + 1}</th>
+										<th>{definitions.indexOf(definition) + 1}</th>
 										<td
 											><p>
-												{submittedDefinition.content.substring(0, 50)}
-												{submittedDefinition.content.length >= 50 ? '...' : ''}
+												{definition.content.substring(0, 50)}
+												{definition.content.length >= 50 ? '...' : ''}
 											</p></td
 										>
-										<td>{submittedDefinition.submittedDate.toLocaleDateString()}</td>
+										<td>{definition.submittedDate.toLocaleDateString()}</td>
 										<td>
 											<p
-												class={`${
-													submittedDefinition.status?.status === 'approved' && 'text-success'
-												} ${submittedDefinition.status?.status === 'pending' && 'text-warning'} ${
-													submittedDefinition.status?.status === 'declined' && 'text-error'
-												}`}
+												class={`${definition.status === 'approved' && 'text-success'} ${
+													definition.status === 'pending' && 'text-warning'
+												} ${definition.status === 'declined' && 'text-error'}`}
 											>
-												{submittedDefinition.status?.status}
+												{definition.status}
 											</p>
-											Status
 										</td>
 									</tr>
-								{/each} -->
+								{/each}
 							</tbody>
 						</table>
+					</div>
+					<div class="btn-group flex justify-center items-center">
+						{#each Array(pageCount) as _, index (index)}
+							{#if index + 1 === currentActivePage}
+								<button
+									class="btn btn-secondary"
+									on:click={() => {
+										currentActivePage = index + 1;
+										getDefinitions();
+									}}>{index + 1}</button
+								>
+							{:else}
+								<button
+									class="btn"
+									on:click={() => {
+										currentActivePage = index + 1;
+										getDefinitions();
+									}}>{index + 1}</button
+								>
+							{/if}
+						{/each}
 					</div>
 				</div>
 			</div>

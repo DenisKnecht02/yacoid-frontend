@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation';
-import type { Params } from '$types';
+import type { Author, OrganizationAuthor, Params, PersonAuthor } from '$types';
 
 export function changeRoute(goto: Function, href: string, params?: Params) {
 	let url: string = `/${href}`;
@@ -13,4 +13,17 @@ export function changeRoute(goto: Function, href: string, params?: Params) {
 	}
 
 	goto(url);
+}
+
+export function getSingleAuthorDisplayName(authorParam: Author): string {
+	let authorDisplayName: string = '';
+	if (authorParam.type === 'person') {
+		let personAuthor: PersonAuthor = authorParam as PersonAuthor;
+		authorDisplayName = personAuthor.lastName + ', ' + personAuthor.firstName;
+	} else {
+		let organizationAuthor: OrganizationAuthor = authorParam as OrganizationAuthor;
+		authorDisplayName = organizationAuthor.organizationName;
+	}
+
+	return authorDisplayName;
 }

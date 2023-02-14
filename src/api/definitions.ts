@@ -1,11 +1,14 @@
 import {
 	convertArray,
 	convertFetchedDefinitionToDefinition,
+	convertFetchedUserDefinitionToDefinition,
 	type Author,
 	type Category,
 	type Definition,
 	type FetchedDefinition,
-	type Source
+	type FetchedUserDefinition,
+	type Source,
+	type UserDefinition
 } from '$types';
 import {
 	fetchGetRequest,
@@ -70,15 +73,29 @@ export type GetDefinitionPageCountResponse = {
 export type DefinitionFilter = {
 	content?: string;
 	approved?: boolean;
+	userId?: string;
 	categories?: Category[];
-	authorIds?: string[];
+	authors?: string[];
 	publishingYears?: number[];
 };
 
 export async function fetchDefinitionPageCount(
-	request: GetDefinitionPageCountRequest
+	request: GetDefinitionPageCountRequest,
+	token?: string
 ): Promise<GenericResponse<number>> {
-	const response = await fetchPostRequest<GetDefinitionPageCountResponse>('definitions/page_count', request);
+	let response: GenericResponse<GetDefinitionPageCountResponse>;
+	if (token) {
+		response = await fetchProtectedPostRequest<GetDefinitionPageCountResponse>(
+			token,
+			'definitions/page_count',
+			request
+		);
+	} else {
+		response = await fetchPostRequest<GetDefinitionPageCountResponse>(
+			'definitions/page_count',
+			request
+		);
+	}
 	return {
 		message: response.message,
 		error: response.error,
@@ -97,12 +114,19 @@ type GetFetchedDefinitionsResponse = {
 };
 
 export async function fetchDefinitionsPage(
-	request: GetDefinitionPageRequest
+	request: GetDefinitionPageRequest,
+	token?: string
 ): Promise<GenericResponse<Definition[]>> {
-	const response = await fetchPostRequest<GetFetchedDefinitionsResponse>(
-		'definitions/page',
-		request
-	);
+	let response: GenericResponse<GetFetchedDefinitionsResponse>;
+	if (token) {
+		response = await fetchProtectedPostRequest<GetFetchedDefinitionsResponse>(
+			token,
+			'definitions/page',
+			request
+		);
+	} else {
+		response = await fetchPostRequest<GetFetchedDefinitionsResponse>('definitions/page', request);
+	}
 
 	let data: GetDefinitionsResponse | undefined = undefined;
 
@@ -111,6 +135,52 @@ export async function fetchDefinitionsPage(
 			definitions: convertArray<FetchedDefinition, Definition>(
 				response.data?.definitions,
 				convertFetchedDefinitionToDefinition
+			)
+		};
+	}
+
+	return {
+		message: response.message,
+		error: response.error,
+		data: data?.definitions
+	};
+}
+
+type GetOwnDefinitionsResponse = {
+	definitions: UserDefinition[];
+};
+
+type GetOwnFetchedDefinitionsResponse = {
+	definitions: FetchedUserDefinition[];
+};
+
+// same request as fetchDefinitionsPage but this one will be used when the user wants to see his own definitions
+// this request will respond with a UserDefinition that includes the rejection log and a status of the definition in addition to a "normal" definition
+export async function fetchUsersOwnDefinitionsPage(
+	request: GetDefinitionPageRequest,
+	token?: string
+): Promise<GenericResponse<UserDefinition[]>> {
+	let response: GenericResponse<GetOwnFetchedDefinitionsResponse>;
+	if (token) {
+		response = await fetchProtectedPostRequest<GetOwnFetchedDefinitionsResponse>(
+			token,
+			'definitions/page',
+			request
+		);
+	} else {
+		response = await fetchPostRequest<GetOwnFetchedDefinitionsResponse>(
+			'definitions/page',
+			request
+		);
+	}
+
+	let data: GetOwnDefinitionsResponse | undefined = undefined;
+
+	if (response.data) {
+		data = {
+			definitions: convertArray<FetchedUserDefinition, UserDefinition>(
+				response.data?.definitions,
+				convertFetchedUserDefinitionToDefinition
 			)
 		};
 	}
