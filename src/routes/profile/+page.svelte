@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from '$components/Icon.svelte';
 	import { goto } from '$app/navigation';
-	import type { UserDefinition } from '$types';
+	import type { Definition, UserDefinition } from '$types';
 	import BasicModal from '$components/BasicModal.svelte';
 	import { session } from '$stores/session';
 	import type { Writable } from 'svelte/store';
@@ -14,11 +14,13 @@
 		fetchDefinitionPageCount,
 		fetchUsersOwnDefinitionsPage
 	} from '$api/definitions';
+	import SubmitDetail from '$components/SubmitDetail.svelte';
 
 	const store: Writable<AuthorizerState> = getContext('authorizerContext');
 
 	let pageCount: number = 0;
 	let definitions: UserDefinition[] = [];
+	let modalDefinition: Definition;
 	let currentActivePage: number = 1;
 
 	let nicknameEditable: boolean = false;
@@ -461,7 +463,7 @@
 				<div class="flex flex-col gap-4 p-4">
 					<p class="text-lg lg:text-xl">
 						Review all of your submitted definitions and their status.
-						<span class="font-medium">(click row for details)</span>
+						<!-- <span class="font-medium">(click row for details)</span> -->
 					</p>
 					<div class="overflow-x-auto">
 						<table class="table w-full">
@@ -472,9 +474,132 @@
 									<th>Definition</th>
 									<th>Submitted On</th>
 									<th>Submission Status</th>
+									<th class="flex justify-center">Details</th>
 								</tr>
 							</thead>
 							<tbody>
+								{#each definitions as definition}
+									<tr
+										class="" 
+									>
+										<th>{definitions.indexOf(definition) + 1}</th>
+										<td
+											><p>
+												{definition.content.substring(0, 50)}
+												{definition.content.length >= 50 ? '...' : ''}
+											</p></td
+										>
+										<td>{definition.submittedDate.toLocaleDateString()}</td>
+										<td>
+											<p
+												class={`${
+													definition.status === 'approved' && 'text-success'
+												} ${definition.status === 'pending' && 'text-warning'} ${
+													definition.status === 'declined' && 'text-error'
+												}`}
+											>
+												{definition.status}
+											</p>
+										</td>
+										<td>
+											<label 
+												on:click={() => {modalDefinition == definition; console.log(definition);}}
+												for="modal_accept1" class="flex justify-center hover:active cursor-pointer"
+											>
+												<Icon icon="arrow-right-circle" color="#000000" strokeWidth="1.5" />
+											</label>
+										</td>
+									</tr>
+									<SubmitDetail
+										modalName="modal_accept1"
+										modalTitle="Details on your submitted definition"
+										submitDate={definition.submittedDate.toDateString()}
+										submitDef={definition.content}
+										submitFeedback={definition.rejectionLog[0]?.content.toString()}
+										submitStatus={definition.status}
+										submitPublishing_date={definition.submittedDate.toDateString()}
+										submitAuthor={definition.source.authors[0]}
+										submitSource={definition.source.title}
+									/>
+								{/each}
+							</tbody>
+
+<!-- 			<div class="flex flex-col rounded-xl shadow-md">
+				<div class="w-full bg-secondary p-4 rounded-t-xl">
+					<h1 class="text-xl lg:text-2xl font-semibold text-white">Submitted Definitions</h1>
+				</div>
+				<div class="flex flex-col gap-4 p-4">
+					<p class="text-lg lg:text-xl">
+						Review all of your submitted definitions and their status.
+					</p>
+					<div class="overflow-x-auto">
+						<table class="table w-full">
+							head
+							<thead>
+								<tr>
+									<th />
+									<th>Definition</th>
+									<th>Submitted On</th>
+									<th>Submission Status</th>
+									<th class="flex justify-center">Details</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each definitions as definition}
+									<tr
+									>
+										<th>{definitions.indexOf(definition) + 1}</th>
+										<td
+											><p>
+												{definition.content.substring(0, 50)}
+												{definition.content.length >= 50 ? '...' : ''}
+											</p></td
+										>
+										<td>{definition.submittedDate.toLocaleDateString()}</td>
+										<td>
+											<p
+												class={`${definition.status === 'approved' && 'text-success'} ${
+													definition.status === 'pending' && 'text-warning'
+												} ${definition.status === 'declined' && 'text-error'}`}
+											>
+												{definition.status}
+											</p>
+										</td>
+										<td>
+											<label for="modal_accept1" class="flex justify-center hover:active cursor-pointer"><Icon icon="arrow-right-circle" color="#000000" strokeWidth="1.5" /></label>
+										</td>
+									</tr>
+									<SubmitDetail
+										modalName="modal_accept1"
+										modalTitle="Details on your submitted definition"
+										submitDate={definition.submittedDate.toDateString()}
+										submitDef={definition.content}
+										submitFeedback={definition.rejectionLog.toString()}
+										submitStatus={definition.status}
+										submitPublishing_date={definition.submittedDate.toDateString()}
+										submitAuthor={definition.source.submittedByName}
+										submitSource={definition.source.submittedBy}
+									/>
+								{/each}
+							</tbody> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+							<!-- <tbody>
 								{#each definitions as definition}
 									<tr
 										class="hover:active cursor-pointer"
@@ -499,7 +624,7 @@
 										</td>
 									</tr>
 								{/each}
-							</tbody>
+							</tbody> -->
 						</table>
 					</div>
 					<div class="btn-group flex justify-center items-center">
