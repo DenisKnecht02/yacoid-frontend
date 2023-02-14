@@ -18,12 +18,14 @@
 			</div>
 		</div>
 		<p class="flex italic text-xl text-justify items-center">"{definition.content}"</p>
-		<div>
-			<p class="flex justify-end text-end font-bold">
+		<div class="flex flex-col justify-end items-end text-end">
+			<p class="flex font-bold">
 				- {getAuthorsDisplayNames(...definition.source.authors).join('; ')}
-				({getDefinitionPublishingDate(definition)?.toLocaleDateString()})
+				{#if getDefinitionPublishingDate(definition)}
+					({getDefinitionPublishingDate(definition)?.toLocaleDateString()})
+				{/if}
 			</p>
-			<p class="flex justify-end text-end break-all italic">
+			<p class="flex w-fit break-words whitespace-pre-wrap italic">
 				from: {getSourceDisplayName(definition.source)}
 			</p>
 		</div>

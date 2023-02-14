@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import type { UserDefinition } from '$types';
 	import BasicModal from '$components/BasicModal.svelte';
-	import { session } from '$stores/session';
+	import { currentRejectionLogDefinition, session } from '$stores/session';
 	import type { Writable } from 'svelte/store';
 	import type { AuthorizerState } from '@authorizerdev/authorizer-svelte/types';
 	import { getContext } from 'svelte';
@@ -14,6 +14,9 @@
 		fetchDefinitionPageCount,
 		fetchUsersOwnDefinitionsPage
 	} from '$api/definitions';
+	import LoginRequired from '$components/LoginRequired.svelte';
+	import RejectionLogModal from '$components/RejectionLogModal.svelte';
+	import { page } from '$app/stores';
 
 	const store: Writable<AuthorizerState> = getContext('authorizerContext');
 
@@ -182,23 +185,6 @@
 			specialCharCriteriaMet;
 	}
 
-	async function changeDefinition() {
-		if ($session === undefined) {
-			console.log('Session is undefined');
-			return;
-		}
-		const response = await fetchChangeDefinition($session.id_token, {
-			id: '63b5529e3e09e73fea2c8c4f',
-			content: 'I change it to this is a good quote.',
-			category: 'artificial_intelligence'
-		});
-		if (response.error) {
-			console.log(response.error);
-		} else {
-			console.log(response.message);
-		}
-	}
-
 	function deleteAccount() {
 		alert('Account deleted');
 	}
@@ -206,13 +192,7 @@
 
 <main class="flex justify-center items-center">
 	{#if $session === undefined}
-		<div class="flex flex-col h-full justify-center items-center p-4 gap-4">
-			<p class="text-2xl md:text-3xl font-bold">Login required</p>
-			<p class="text-lg md:text-xl">Please click the link below to visit the login page.</p>
-			<button class="btn btn-link text-blue-500" on:click={() => changeRoute(goto, 'auth')}
-				>Login</button
-			>
-		</div>
+		<LoginRequired />
 	{:else}
 		<div class="flex flex-col gap-12 p-6 lg:p-10 md:m-10 lg:m-14 w-full lg:w-4/5 h-full">
 			<div class="flex gap-4">
@@ -472,14 +452,12 @@
 									<th>Definition</th>
 									<th>Submitted On</th>
 									<th>Submission Status</th>
+									<th class="flex justify-center">Details</th>
 								</tr>
 							</thead>
 							<tbody>
 								{#each definitions as definition}
-									<tr
-										class="hover:active cursor-pointer"
-										on:click={() => alert('Now the modal should open to see details')}
-									>
+									<tr class="hover:active cursor-pointer">
 										<th>{definitions.indexOf(definition) + 1}</th>
 										<td
 											><p>
@@ -496,6 +474,16 @@
 											>
 												{definition.status}
 											</p>
+										</td>
+										<td>
+											<label
+												for="rejectionLogModal"
+												class="flex justify-center hover:active cursor-pointer"
+												on:click={() => currentRejectionLogDefinition.set(definition)}
+											>
+												<Icon icon="arrow-right-circle" color="#000000" strokeWidth="1.5" />
+											</label>
+											<RejectionLogModal modalName="rejectionLogModal" />
 										</td>
 									</tr>
 								{/each}

@@ -2,12 +2,10 @@ import {
 	convertArray,
 	convertFetchedDefinitionToDefinition,
 	convertFetchedUserDefinitionToDefinition,
-	type Author,
 	type Category,
 	type Definition,
 	type FetchedDefinition,
 	type FetchedUserDefinition,
-	type Source,
 	type UserDefinition
 } from '$types';
 import {
@@ -17,7 +15,6 @@ import {
 	fetchProtectedGetRequest,
 	fetchProtectedPostRequest,
 	fetchProtectedPutRequest,
-	type FetchParams,
 	type GenericResponse
 } from './api';
 
@@ -106,6 +103,7 @@ export async function fetchDefinitionPageCount(
 export type GetDefinitionPageRequest = {
 	pageSize: number;
 	page: number;
+	adminInformation?: boolean;
 	filter?: DefinitionFilter;
 };
 
@@ -213,9 +211,7 @@ export async function fetchDefinitionById(id: string): Promise<GenericResponse<D
 }
 
 export type SubmitDefinitionRequest = {
-	title: string;
 	content: string;
-	publishingDate?: string;
 	category: Category;
 	sourceId: string;
 };
@@ -261,7 +257,6 @@ export async function fetchRejectDefinition(
 
 export type ChangeDefinitionRequest = {
 	id: string;
-	title?: string;
 	content?: string;
 	sourceId?: string;
 	category?: Category;

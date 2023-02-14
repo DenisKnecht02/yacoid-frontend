@@ -8,7 +8,7 @@
 	</div>
 	<div>
 		<div class="grid grid-flow-col gap-4">
-			<a href="https://github.com/DenisKnecht02/YACOID">
+			<a href="https://github.com/DenisKnecht02/yacoid-frontend">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					x="0px"
@@ -26,7 +26,7 @@
 		</div>
 	</div>
 	<div>
-		<p>Copyright © 2022 - All right reserved by YACOID</p>
+		<p>{`Copyright © ${new Date().getFullYear()} - All right reserved by YACOID`}</p>
 	</div>
 </footer>
 

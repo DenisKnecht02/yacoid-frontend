@@ -254,7 +254,11 @@ export function getSourceDisplayName(source: Source): string {
 		displayParts.push(bookSource.title);
 		if (bookSource.pagesFrom) {
 			if (bookSource.pagesTo) {
-				displayParts.push(`p. ${bookSource.pagesFrom}-${bookSource.pagesTo}`);
+				if (bookSource.pagesFrom === bookSource.pagesTo) {
+					displayParts.push(`p. ${bookSource.pagesFrom.toString()}`);
+				} else {
+					displayParts.push(`p. ${bookSource.pagesFrom}-${bookSource.pagesTo}`);
+				}
 			} else {
 				displayParts.push(`p. ${bookSource.pagesFrom.toString()}`);
 			}
@@ -267,7 +271,11 @@ export function getSourceDisplayName(source: Source): string {
 		displayParts.push(journalSource.title, journalSource.journalName);
 		if (journalSource.pagesFrom) {
 			if (journalSource.pagesTo) {
-				displayParts.push(`p. ${journalSource.pagesFrom}-${journalSource.pagesTo}`);
+				if (journalSource.pagesFrom === journalSource.pagesTo) {
+					displayParts.push(`p. ${journalSource.pagesFrom.toString()}`);
+				} else {
+					displayParts.push(`p. ${journalSource.pagesFrom}-${journalSource.pagesTo}`);
+				}
 			} else {
 				displayParts.push(`p. ${journalSource.pagesFrom.toString()}`);
 			}

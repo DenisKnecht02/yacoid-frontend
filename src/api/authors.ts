@@ -71,9 +71,7 @@ export async function fetchCreateAuthor(
 export type AuthorFilter = {
 	approved?: boolean;
 	types?: AuthorType[];
-	firstName?: string;
-	lastName?: string;
-	organizationName?: string;
+	name?: string;
 };
 
 export type GetAuthorPageRequest = {
@@ -91,9 +89,19 @@ export type GetAuthorPageResponse = {
 };
 
 export async function fetchAuthorPage(
-	request: GetAuthorPageRequest
+	request: GetAuthorPageRequest,
+	token?: string
 ): Promise<GenericResponse<Author[]>> {
-	const response = await fetchPostRequest<GetFetchedAuthorsResponse>('authors/page', request);
+	let response: GenericResponse<GetFetchedAuthorsResponse>;
+	if (token) {
+		response = await fetchProtectedPostRequest<GetFetchedAuthorsResponse>(
+			token,
+			'authors/page',
+			request
+		);
+	} else {
+		response = await fetchPostRequest<GetFetchedAuthorsResponse>('authors/page', request);
+	}
 
 	let data: GetAuthorPageResponse | undefined = undefined;
 
@@ -123,12 +131,19 @@ export type GetAuthorPageCountResponse = {
 };
 
 export async function fetchAuthorPageCount(
-	request: GetAuthorPageCountRequest
+	request: GetAuthorPageCountRequest,
+	token?: string
 ): Promise<GenericResponse<number>> {
-	const response = await fetchPostRequest<GetAuthorPageCountResponse>(
-		'authors/page_count',
-		request
-	);
+	let response: GenericResponse<GetAuthorPageCountResponse>;
+	if (token) {
+		response = await fetchProtectedPostRequest<GetAuthorPageCountResponse>(
+			token,
+			'authors/page_count',
+			request
+		);
+	} else {
+		response = await fetchPostRequest<GetAuthorPageCountResponse>('authors/page_count', request);
+	}
 
 	return {
 		message: response.message,

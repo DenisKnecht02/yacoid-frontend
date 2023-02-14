@@ -137,12 +137,10 @@
 				bind:value={searchCriteria}
 				on:input={() => {
 					if (searchCriteria) {
-						// when the user wants to search for specific authors, the filter will be set by using firstName
-						// however, in the backend a fuzzy search is performed on all three name types (firstName, lastName, organizationName)
-						currentFilter = { ...currentFilter, firstName: searchCriteria };
+						currentFilter = { ...currentFilter, name: searchCriteria };
 						getAuthors();
 					} else {
-						delete currentFilter.firstName;
+						delete currentFilter.name;
 						getAuthors();
 					}
 				}}

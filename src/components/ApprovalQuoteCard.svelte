@@ -1,29 +1,31 @@
 <script lang="ts">
 	import { fetchApproveDefinition, fetchRejectDefinition } from '$api/definitions';
-	import { session } from '$stores/session';
+	import {
+		currentRejectionLogDefinition,
+		currentSubmittedDefinition,
+		session
+	} from '$stores/session';
 	import {
 		CategoryLabel,
 		getAuthorsDisplayNames,
 		getDefinitionPublishingDate,
 		getSourceDisplayName,
-		type Definition
+		type Definition,
+		type UserDefinition
 	} from '$types';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, setContext } from 'svelte';
+	import ApproveModal from './ApproveModal.svelte';
+	import Icon from './Icon.svelte';
+	import RejectionLogModal from './RejectionLogModal.svelte';
+	import RejectModal from './RejectModal.svelte';
 
-	export let definition: Definition;
-	let declinementReason: string = '';
-
-	let showEmail: boolean = false;
-
-	function changeShowEmail() {
-		showEmail = !showEmail;
-	}
+	export let definition: UserDefinition;
 
 	const dispatch = createEventDispatcher();
 
-	async function approveDefinition() {
+	async function approveDefinition(id: string) {
 		if ($session) {
-			const response = await fetchApproveDefinition($session.id_token, definition.id);
+			const response = await fetchApproveDefinition($session.id_token, id);
 			if (response.error) {
 				console.log(response.error);
 			} else {
@@ -32,11 +34,11 @@
 		}
 	}
 
-	async function rejectDefinition() {
-		if ($session && declinementReason) {
+	async function rejectDefinition(id: string, content: string) {
+		if ($session && content) {
 			const response = await fetchRejectDefinition($session.id_token, {
-				id: definition.id,
-				content: declinementReason
+				id: id,
+				content: content
 			});
 			if (response.error) {
 				console.log(response.error);
@@ -67,19 +69,45 @@
 				{CategoryLabel[definition.category]}
 			</div>
 			<div id="forSymbol" class="flex gap-2 items-center">
-				<label for="modal_accept" class="cursor-pointer px-2 text-lg bg-green-400 rounded-lg p-1">
+				<label
+					for="rejectionLogModal"
+					class="cursor-pointer"
+					on:click={() => currentRejectionLogDefinition.set(definition)}
+				>
+					<Icon icon="info" color="#00000" />
+				</label>
+				<RejectionLogModal modalName="rejectionLogModal" userView={false} />
+				<label
+					for="modalAccept"
+					class="cursor-pointer px-2 text-lg bg-green-400 rounded-lg p-1"
+					on:click={() => currentSubmittedDefinition.set(definition)}
+				>
 					👍
 				</label>
-				<label for="modal_decline" class="cursor-pointer px-2 text-lg bg-red-400 rounded-lg p-1">
+				<ApproveModal
+					modalName="modalAccept"
+					on:approve={(event) => approveDefinition(event.detail.id)}
+				/>
+				<label
+					for="modalDecline"
+					class="cursor-pointer px-2 text-lg bg-red-400 rounded-lg p-1"
+					on:click={() => currentSubmittedDefinition.set(definition)}
+				>
 					👎
 				</label>
+				<RejectModal
+					modalName="modalDecline"
+					on:reject={(event) => rejectDefinition(event.detail.id, event.detail.content)}
+				/>
 			</div>
 		</div>
 		<p class="flex italic text-xl text-justify items-center">"{definition.content}"</p>
 		<div>
 			<p class="flex justify-end items-end font-bold">
 				- {getAuthorsDisplayNames(...definition.source.authors).join('; ')}
-				({getDefinitionPublishingDate(definition)?.toLocaleDateString()})
+				{#if getDefinitionPublishingDate(definition)}
+					({getDefinitionPublishingDate(definition)?.toLocaleDateString()})
+				{/if}
 			</p>
 			<p class="flex justify-end text-end break-all italic">
 				from: {getSourceDisplayName(definition.source)}
@@ -87,70 +115,6 @@
 		</div>
 	</div>
 </div>
-
-<input type="checkbox" id="modal_accept" class="modal-toggle" />
-<label for="modal_accept" class="modal cursor-pointer" on:click={approveDefinition}>
-	<label class="modal-box relative" for="">
-		<div class="flex flex-col w-full h-full gap-4 p-2 ">
-			<h3 class="text-2xl font-bold">Definition accepted</h3>
-			<p class="text-lg text-justify">
-				An e-mail of approval will be sent to {definition.submittedByName} and the definition will be
-				added to the list.
-			</p>
-		</div>
-	</label>
-</label>
-
-<input type="checkbox" id="modal_decline" class="modal-toggle" />
-<label for="modal_decline" class="modal cursor-pointer">
-	<label class="modal-box relative w-full h-full max-w-5xl" for="">
-		<div class="flex flex-col gap-8 w-full h-full">
-			<div class="flex flex-col gap-4">
-				<h3 class="text-2xl font-bold">Definition declined</h3>
-				<p class="text-lg text-justify">
-					Please provide feedback why this definition is going to be declined.
-				</p>
-				<textarea
-					class="textarea textarea-bordered"
-					placeholder="Reason for declinement..."
-					bind:value={declinementReason}
-				/>
-			</div>
-			<div class="flex flex-col gap-4 w-full h-full">
-				<div class="flex justify-between items-center">
-					<p class="text-lg text-justify font-medium">What the e-mail will look like:</p>
-					<button class="hover:text-blue-500 hover:underline" on:click={changeShowEmail}>
-						{#if showEmail}
-							Hide
-						{:else}
-							Show
-						{/if}
-					</button>
-				</div>
-				{#if showEmail}
-					<div class="w-full h-full bg-gray-300 rounded-xl font-mono p-4">
-						<p>
-							Dear {definition.submittedByName}, <br /> <br /> Unfortunately, your definition, sent
-							on {definition.submittedDate.toLocaleDateString()}, was declined due to the following
-							reason. <br /> <br />
-							{declinementReason} <br /> <br />
-							Click on the following link to see more details and edit your definition.<br />
-							<a href="https://www.google.com" class="text-blue-500 underline">Link</a> <br />
-							<br />
-							Best regards,<br /> <br />
-							YACOID
-						</p>
-					</div>
-				{/if}
-			</div>
-			<div class="modal-action">
-				<label for="modal_decline" class="btn btn-error">Cancel</label>
-				<label for="modal_decline" class="btn btn-secondary" on:click={rejectDefinition}>Send</label
-				>
-			</div>
-		</div>
-	</label>
-</label>
 
 <style lang="postcss">
 </style>
