@@ -3,8 +3,8 @@
 
 <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded">
 	<div class="grid grid-flow-col gap-4">
-		<a href="www.google.com" class="link link-hover">Privacy</a>
-		<a href="www.google.com" class="link link-hover">Imprint</a>
+		<a href="" class="link link-hover">Privacy</a>
+		<a href="" class="link link-hover">Imprint</a>
 	</div>
 	<div>
 		<div class="grid grid-flow-col gap-4">

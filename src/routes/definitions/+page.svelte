@@ -4,7 +4,14 @@
 	import QuoteCard from '../../components/QuoteCard.svelte';
 	import { goto } from '$app/navigation';
 	import Icon from '$components/Icon.svelte';
-	import { Categories, CategoryLabel, type Author, type Category, type Definition } from '$types';
+	import {
+		Categories,
+		CategoryLabel,
+		getSourceDisplayName,
+		type Author,
+		type Category,
+		type Definition
+	} from '$types';
 	import {
 		fetchDefinitionsPage,
 		fetchDefinitionPageCount,
@@ -101,20 +108,25 @@
 			typeof definitionsToExport != 'object'
 				? JSON.parse(definitionsToExport)
 				: definitionsToExport;
-		var str =
+		var resultString =
 			'sep=|\r\nID|submittedBy|submittedByName|submittedByDate|Definition|Source|Category\r\n';
 
-		for (var i = 0; i < array.length; i++) {
-			var line = '';
-			for (var index in array[i]) {
-				if (line != '') line += '|';
+		definitionsToExport.forEach((definition: Definition) => {
+			let line: string = '';
+			Object.keys(definition).forEach((property: string) => {
+				if (line !== '') line += '|';
 
-				line += array[i][index];
-			}
+				if (property === 'source') {
+					line += getSourceDisplayName(definition.source);
+				} else {
+					//@ts-ignore
+					line += definition[property];
+				}
+			});
+			resultString += line + '\r\n';
+		});
 
-			str += line + '\r\n';
-		}
-		return str;
+		return resultString;
 	}
 </script>
 

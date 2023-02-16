@@ -63,10 +63,6 @@ export type GetDefinitionPageCountRequest = {
 	filter?: DefinitionFilter;
 };
 
-export type GetDefinitionPageCountResponse = {
-	count: number;
-};
-
 export type DefinitionFilter = {
 	content?: string;
 	approved?: boolean;
@@ -74,6 +70,10 @@ export type DefinitionFilter = {
 	categories?: Category[];
 	authors?: string[];
 	publishingYears?: number[];
+};
+
+export type GetDefinitionPageCountResponse = {
+	count: number;
 };
 
 export async function fetchDefinitionPageCount(
