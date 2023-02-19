@@ -53,7 +53,7 @@
 
 	// all properties for book source
 	let bookTitle: string;
-	let bookPublicationDate: Date | undefined;
+	let bookPublicationDate: Date | string | undefined;
 	let bookPublicationDateInput: HTMLInputElement;
 	let bookPublicationPlace: string | undefined;
 	let bookPagesFrom: number | undefined;
@@ -67,7 +67,7 @@
 	// all properties for journal source
 	let journalTitle: string;
 	let journalArticleName: string;
-	let journalPublicationDate: Date | undefined;
+	let journalPublicationDate: Date | string | undefined;
 	let journalPublicationDateInput: HTMLInputElement;
 	let journalPublicationPlace: string | undefined;
 	let journalPagesFrom: number | undefined;
@@ -80,8 +80,8 @@
 	let webArticleName: string;
 	let webURL: string;
 	let websiteName: string;
-	let webAccessDate: Date;
-	let webPublicationDate: Date | undefined;
+	let webAccessDate: Date | string;
+	let webPublicationDate: Date | string | undefined;
 	let webAccessDateInput: HTMLInputElement;
 	let webPublicationDateInput: HTMLInputElement;
 
@@ -121,7 +121,8 @@
 		if (sourceType === 'book') {
 			let bookSource: BookSource = definition.source as BookSource;
 			bookTitle = bookSource.title;
-			if (bookSource.publicationDate) bookPublicationDate = bookSource.publicationDate;
+			if (bookSource.publicationDate)
+				bookPublicationDate = bookSource.publicationDate.toISOString().substring(0, 10);
 			if (bookSource.edition) bookEdition = bookSource.edition;
 			if (bookSource.publicationPlace) bookPublicationPlace = bookSource.publicationPlace;
 			if (bookSource.pagesFrom) bookPagesFrom = bookSource.pagesFrom;
@@ -134,7 +135,8 @@
 			let journalSource: JournalSource = definition.source as JournalSource;
 			journalArticleName = journalSource.title;
 			journalTitle = journalSource.journalName;
-			if (journalSource.publicationDate) journalPublicationDate = journalSource.publicationDate;
+			if (journalSource.publicationDate)
+				journalPublicationDate = journalSource.publicationDate.toISOString().substring(0, 10);
 			if (journalSource.edition) journalEdition = journalSource.edition;
 			if (journalSource.publicationPlace) journalPublicationPlace = journalSource.publicationPlace;
 			if (journalSource.pagesFrom) journalPagesFrom = journalSource.pagesFrom;
@@ -145,9 +147,10 @@
 			let webSource: WebSource = definition.source as WebSource;
 			webArticleName = webSource.articleName;
 			websiteName = webSource.websiteName;
-			webAccessDate = webSource.accessDate;
+			webAccessDate = webSource.accessDate.toISOString().substring(0, 10);
 			webURL = webSource.url;
-			if (webSource.publicationDate) webPublicationDate = webSource.publicationDate;
+			if (webSource.publicationDate)
+				webPublicationDate = webSource.publicationDate.toISOString().substring(0, 10);
 		}
 	}
 
